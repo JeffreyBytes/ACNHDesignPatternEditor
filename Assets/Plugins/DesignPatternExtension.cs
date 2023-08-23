@@ -287,10 +287,12 @@ public static class DesignPatternExtension
 		if (pattern is ProDesignPattern)
 		{
 			pattern.Type = DesignPattern.TypeEnum.EmptyProPattern;
+			pattern.Name = "PRO Pattern";
 			Array.Copy(EmptyProPixels, 0, pattern.Image, 0, EmptyProPixels.Length);
 		}
 		else
 		{
+			pattern.Name = "Design Pattern";
 			Array.Copy(EmptyPixels, 0, pattern.Image, 0, pattern.Image.Length);
 		}
 	}
