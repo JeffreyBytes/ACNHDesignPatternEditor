@@ -37,7 +37,8 @@ public class SavegameInfo
         new Header(0x80009, 0x80085, 2, 0, 2, 26, "2.0.4", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 27, "2.0.5", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 28, "2.0.6", 11),
-        new Header(0x80009, 0x80085, 2, 0, 2, 29, "2.0.7", 11)
+        new Header(0x80009, 0x80085, 2, 0, 2, 29, "2.0.7", 11),
+        new Header(0x80009, 0x80085, 2, 0, 2, 30, "2.0.8", 11)
     };
 
     private static List<Info> Infos = new List<Info>()
