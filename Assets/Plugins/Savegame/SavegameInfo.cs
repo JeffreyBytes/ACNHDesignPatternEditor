@@ -38,7 +38,8 @@ public class SavegameInfo
         new Header(0x80009, 0x80085, 2, 0, 2, 27, "2.0.5", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 28, "2.0.6", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 29, "2.0.7", 11),
-        new Header(0x80009, 0x80085, 2, 0, 2, 30, "2.0.8", 11)
+        new Header(0x80009, 0x80085, 2, 0, 2, 30, "2.0.8", 11),
+        new Header(0xA0002, 0xA0028, 2, 0, 2, 31, "3.0.0", 12)
     };
 
     private static List<Info> Infos = new List<Info>()
@@ -315,6 +316,27 @@ public class SavegameInfo
             new HashRegion(0x82fa10, 0x03693c),
             new HashRegion(0x866350, 0x033acc),
             new HashRegion(0x899e20, 0x057d8c),
+        }),
+        new Info(0x8F1BB0, 0x1E3958, 0x1F42F8, 100, 100, new HashRegion[] {
+            new HashRegion(0x000110, 0x1e339c),
+            new HashRegion(0x1e34b0, 0x3d089c),
+            new HashRegion(0x5b3e60, 0x037acc),
+            new HashRegion(0x5eb930, 0x03ce5c),
+            new HashRegion(0x6288a0, 0x037acc),
+            new HashRegion(0x660370, 0x03ce5c),
+            new HashRegion(0x69d2e0, 0x037acc),
+            new HashRegion(0x6d4db0, 0x03ce5c),
+            new HashRegion(0x711d20, 0x037acc),
+            new HashRegion(0x7497f0, 0x03ce5c),
+            new HashRegion(0x786760, 0x037acc),
+            new HashRegion(0x7be230, 0x03ce5c),
+            new HashRegion(0x7fb1a0, 0x037acc),
+            new HashRegion(0x832c70, 0x03ce5c),
+            new HashRegion(0x86fbe0, 0x037acc),
+            new HashRegion(0x8a76b0, 0x03ce5c),
+            new HashRegion(0x8e4620, 0x037acc),
+            new HashRegion(0x91c0f0, 0x03ce5c),
+            new HashRegion(0x958f50, 0x057f3c),
         })
     };
 
