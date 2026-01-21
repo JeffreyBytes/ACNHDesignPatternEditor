@@ -39,7 +39,7 @@ public class SavegameInfo
         new Header(0x80009, 0x80085, 2, 0, 2, 28, "2.0.6", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 29, "2.0.7", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 30, "2.0.8", 11),
-        new Header(0xA0002, 0xA0028, 2, 0, 2, 31, "3.0.0", 12)
+        new Header(0xA0002, 0xA0028, 2, 0, 2, 31, "3.0.0", 13)
     };
 
     private static List<Info> Infos = new List<Info>()
@@ -317,7 +317,7 @@ public class SavegameInfo
             new HashRegion(0x866350, 0x033acc),
             new HashRegion(0x899e20, 0x057d8c),
         }),
-        new Info(0x8F1BB0, 0x1E3958, 0x1F42F8, 100, 100, new HashRegion[] {
+        new Info(0x9B0E90, 0x1E3958, 0x1F42F8, 100, 100, new HashRegion[] {
             new HashRegion(0x000110, 0x1e339c),
             new HashRegion(0x1e34b0, 0x3d089c),
             new HashRegion(0x5b3e60, 0x037acc),
@@ -351,7 +351,10 @@ public class SavegameInfo
         foreach (var header in Headers)
         {
             if (header.Check(major, minor, u1, headerRevision, u2, saveRevision))
+            {
+                //System.IO.File.AppendAllText("log.txt", "Checked version " + header.GameVersion + "\r\n");
                 return Infos[header.SaveVersion];
+            }
         }
         return null;
     }

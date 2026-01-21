@@ -43,7 +43,9 @@ public unsafe class Savegame : BinaryData, IDesignPatternContainer
             _SimpleDesignPatterns = new SimpleDesignPattern[Info.SimpleDesignCount];
             _ProDesignPatterns = new ProDesignPattern[Info.ProDesignCount];
             var bytes = SaveEncryption.Decrypt(headerBytes, mainBytes);
+
             //System.IO.File.WriteAllBytes(HeaderFile.DirectoryName + "/decrypted", bytes);
+
             Size = bytes.Length;
             RawData = Marshal.AllocHGlobal(Size);
             Data = (byte*) RawData.ToPointer();
@@ -100,6 +102,7 @@ public unsafe class Savegame : BinaryData, IDesignPatternContainer
                 Murmur3.UpdateMurmur32(bytes, hashRegion.HashOffset, hashRegion.BeginOffset, hashRegion.Size);
         }
 
+        //System.IO.File.WriteAllBytes(HeaderFile.DirectoryName + "/beforeEncryption", bytes);
         var (fileData, headerData) = SaveEncryption.Encrypt(bytes, (uint) DateTime.Now.Ticks);
         File.WriteAllBytes(HeaderFile.FullName, headerData);
         File.WriteAllBytes(MainFile.FullName, fileData);
