@@ -2,6 +2,7 @@
 using SimplePaletteQuantizer.Quantizers.XiaolinWu;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -341,80 +342,118 @@ public class PatternSelector : MonoBehaviour
 						"<align=\"center\"><#827157>Which format do you want to import?",
 						(format) =>
 						{
-							/*
-							if (format == FormatPopup.Format.Online)
-							{
-								Controller.Instance.SwitchToPatternExchange(
-									pattern.Pattern is ProDesignPattern,
-									(DesignServer.Pattern resultPattern) =>
-									{
-										DesignPattern designPattern = null;
-										var acnhFileFormat = new ACNHFileFormat(resultPattern.Bytes);
-										if (acnhFileFormat.IsPro)
-										{
-											designPattern = new ProDesignPattern();
-											designPattern.CopyFrom(acnhFileFormat);
-										}
-										else
-										{
-											designPattern = new SimpleDesignPattern();
-											designPattern.CopyFrom(acnhFileFormat);
-										}
-										pattern.Pattern.CopyFrom(designPattern);
-										pattern.Pattern.Name = resultPattern.Name;
-										pattern.Pattern.ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
-										pattern.SetPattern(pattern.Pattern);
-										Controller.Instance.SwitchToPatternMenu();
-									},
-									() =>
-									{
-										Controller.Instance.SwitchToPatternMenu();
-									}
-								);
-							}
-							else */if (format == FormatPopup.Format.ACNH)
+                            if (format == FormatPopup.Format.ACNH)
                             {
                                 var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnh" }, "Design", false);
                                 if (path != null)
-								{
-									try
-									{
-										if (path.EndsWith(".acnh"))
-										{
-											var file = new ACNHFileFormat(System.IO.File.ReadAllBytes(path));
-											if (file.IsPro != (pattern.Pattern is ProDesignPattern))
+                                {
+                                    try
+                                    {
+                                        if (path.EndsWith(".acnh"))
+                                        {
+                                            var file = new ACNHFileFormat(System.IO.File.ReadAllBytes(path));
+                                            if (file.IsPro != (pattern.Pattern is ProDesignPattern))
+                                            {
+                                                Controller.Instance.Popup.SetText("Basic and pro designs are not interchangeable. (You selected a " + (pattern.Pattern is ProDesignPattern ? "pro design" : "basic design") + " but wanted to import a "+ (file.IsPro ? "pro design" : "basic design") + ")", false, () => { return true; });
+                                            }
+                                            else
+                                            {
+                                                if (file.Type == DesignPattern.TypeEnum.Unsupported)
+                                                    Controller.Instance.Popup.SetText("The design you tried to import is unspported by Animal Crossing: New Horizons.", false, () => { return true; });
+                                                else
+                                                {
+                                                    if (pattern.Pattern is ProDesignPattern)
+                                                    {
+                                                        Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index].CopyFrom(file);
+                                                        Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index].ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
+                                                        pattern.SetPattern(Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index]);
+                                                    }
+                                                    else
+                                                    {
+                                                        Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index].CopyFrom(file);
+                                                        Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index].ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
+                                                        pattern.SetPattern(Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch (System.Exception e)
+                                    {
+                                        Controller.Instance.Popup.SetText("Unknown error occured.", false, () => { return true; });
+                                    }
+                                }
+                            }
+                            else if (format == FormatPopup.Format.Raw)
+                            {
+                                var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.nhd" }, "Design", false);
+                                if (path != null)
+                                {
+                                    try
+                                    {
+                                        if (path.EndsWith(".nhd"))
+                                        {
+											var bytes = System.IO.File.ReadAllBytes(path);
+											DesignPattern newPattern = null;
+											if (bytes.Length == 0x2A8) // plain simple pattern
 											{
-												Controller.Instance.Popup.SetText("Basic and pro designs are not interchangeable. (You selected a " + (pattern.Pattern is ProDesignPattern ? "pro design" : "basic design") + " but wanted to import a "+ (file.IsPro ? "pro design" : "basic design") + ")", false, () => { return true; });
-											}
-											else
-											{
-												if (file.Type == DesignPattern.TypeEnum.Unsupported)
-													Controller.Instance.Popup.SetText("The design you tried to import is unspported by Animal Crossing: New Horizons.", false, () => { return true; });
-												else
+												unsafe
 												{
-													if (pattern.Pattern is ProDesignPattern)
-													{
-														Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index].CopyFrom(file);
-														Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index].ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
-														pattern.SetPattern(Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index]);
-													}
-													else
-													{
-														Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index].CopyFrom(file);
-														Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index].ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
-														pattern.SetPattern(Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index]);
-													}
+													var binaryData = new BinaryData();
+													binaryData.Size = bytes.Length;
+                                                    var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+													var ptr = (byte*) handle.AddrOfPinnedObject().ToPointer();
+													binaryData.Data = ptr;
+													newPattern = SimpleDesignPattern.Read(binaryData, 0);
+													handle.Free();
 												}
 											}
-										}
-									}
-									catch (System.Exception e)
-									{
-										Controller.Instance.Popup.SetText("Unknown error occured.", false, () => { return true; });
-									}
-								}
-							}
-							else if (format == FormatPopup.Format.ACNL)
+											else if (bytes.Length == 0x8A8) // plain pro pattern
+											{
+												unsafe
+												{
+													var binaryData = new BinaryData();
+													binaryData.Size = bytes.Length;
+                                                    var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+													var ptr = (byte*) handle.AddrOfPinnedObject().ToPointer();
+													binaryData.Data = ptr;
+													newPattern = ProDesignPattern.Read(binaryData, 0);
+													handle.Free();
+												}
+											}
+                                            if ((pattern is SimpleDesignPattern && pattern.Pattern is ProDesignPattern) || (pattern is ProDesignPattern && pattern.Pattern is SimpleDesignPattern))
+                                            {
+                                                Controller.Instance.Popup.SetText("Basic and pro designs are not interchangeable. (You selected a " + (pattern.Pattern is ProDesignPattern ? "pro design" : "basic design") + " but wanted to import a "+ ((newPattern is ProDesignPattern) ? "pro design" : "basic design") + ")", false, () => { return true; });
+                                            }
+                                            else
+                                            {
+                                                if (newPattern.Type == DesignPattern.TypeEnum.Unsupported)
+                                                    Controller.Instance.Popup.SetText("The design you tried to import is unspported by Animal Crossing: New Horizons.", false, () => { return true; });
+                                                else
+                                                {
+                                                    if (pattern.Pattern is ProDesignPattern)
+                                                    {
+                                                        Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index].CopyFrom(newPattern);
+                                                        Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index].ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
+                                                        pattern.SetPattern(Controller.Instance.CurrentSavegame.ProDesignPatterns[pattern.Pattern.Index]);
+                                                    }
+                                                    else
+                                                    {
+                                                        Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index].CopyFrom(newPattern);
+                                                        Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index].ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
+                                                        pattern.SetPattern(Controller.Instance.CurrentSavegame.SimpleDesignPatterns[pattern.Pattern.Index]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch (System.Exception e)
+                                    {
+                                        Controller.Instance.Popup.SetText("Unknown error occured.", false, () => { return true; });
+                                    }
+                                }
+                            }
+                            else if (format == FormatPopup.Format.ACNL)
 							{
 								var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnl" }, "Design", false);
                                 if (path != null)
@@ -688,6 +727,7 @@ public class PatternSelector : MonoBehaviour
 						true,
 						true,
 						true, 
+						true,
 						false
 					);
 				})),
@@ -714,7 +754,7 @@ public class PatternSelector : MonoBehaviour
 									"Please enter your creator name!"
 								);
 							}
-							if (format == FormatPopup.Format.ACNH)
+							else if (format == FormatPopup.Format.ACNH)
                             {
                                 var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnh" }, "Design");
                                 if (path != null)
@@ -731,8 +771,54 @@ public class PatternSelector : MonoBehaviour
 										Debug.LogException(e);
 									}
 								}
-							}
-							else if (format == FormatPopup.Format.ACNL)
+                            }
+                            else if (format == FormatPopup.Format.Raw)
+                            {
+                                var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.nhd" }, "Design");
+                                if (path != null)
+                                {
+                                    try
+                                    {
+                                        byte[] bytes = null;
+                                        DesignPattern newPattern;
+                                        if (pattern.Pattern is SimpleDesignPattern simpleDesign) // plain simple pattern
+										{
+                                            unsafe
+                                            {
+												bytes = new byte[0x2a8];
+                                                var binaryData = new BinaryData();
+												binaryData.Size = bytes.Length;
+                                                var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                                                var ptr = (byte*) handle.AddrOfPinnedObject().ToPointer();
+                                                binaryData.Data = ptr;
+												simpleDesign.Write(binaryData, 0);
+                                                handle.Free();
+                                            }
+                                        }
+                                        else if (pattern.Pattern is ProDesignPattern proDesign) // plain pro pattern
+										{
+                                            unsafe
+                                            {
+												bytes = new byte[0x8a8];
+                                                var binaryData = new BinaryData();
+                                                binaryData.Size = bytes.Length;
+                                                var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                                                var ptr = (byte*) handle.AddrOfPinnedObject().ToPointer();
+                                                binaryData.Data = ptr;
+												proDesign.Write(binaryData, 0);
+                                                handle.Free();
+                                            }
+                                        }
+                                        System.IO.File.WriteAllBytes(path, bytes);
+                                    }
+                                    catch (System.Exception e)
+                                    {
+                                        Controller.Instance.Popup.SetText("Unknown error occured.", false, () => { return true; });
+                                        Debug.LogException(e);
+                                    }
+                                }
+                            }
+                            else if (format == FormatPopup.Format.ACNL)
 							{
 								var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnl" }, "Design");
 								if (path != null)
@@ -851,6 +937,7 @@ public class PatternSelector : MonoBehaviour
 						 pattern.Pattern.Type == DesignPattern.TypeEnum.NoSleeveDress3DS ||
 						 pattern.Pattern.Type == DesignPattern.TypeEnum.NoSleeveShirt3DS ||
 						 pattern.Pattern.Type == DesignPattern.TypeEnum.SimplePattern),
+						true,
 						true,
 						true
 					);
