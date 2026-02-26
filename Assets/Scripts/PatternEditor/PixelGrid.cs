@@ -195,7 +195,11 @@ public class PixelGrid : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 			if (!LastMouseDown && MouseDown)
 				Editor.CurrentTool.MouseDown(brushX, brushY);
 
-			if (pos.x >= 0 && pos.x < Editor.CurrentPattern.CurrentSubPattern.Width &&
+			if (Editor.Tools.CurrentTool == Tools.Tool.Transform)
+			{
+                BrushOverlay.gameObject.SetActive(false);
+            }
+			else if (pos.x >= 0 && pos.x < Editor.CurrentPattern.CurrentSubPattern.Width &&
 				pos.y >= 0 && pos.y < Editor.CurrentPattern.CurrentSubPattern.Height)
 			{
 				if (Editor.Tools.CurrentTool == Tools.Tool.ColorPicker)

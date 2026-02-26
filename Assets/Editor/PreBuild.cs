@@ -19,6 +19,6 @@ public class PreBuild : IPreprocessBuildWithReport
         {
             linkerFlags += "comdlg32.lib";
         }
-        PlayerSettings.SetAdditionalIl2CppArgs((additionalLibraries != "" ? "--additional-libraries \""+additionalLibraries+"\"" : "") + (compilerFlags != "" ? "--compiler-flags=\"" + compilerFlags + "\" " : "") + (linkerFlags != "" ? "--linker-flags=\"" + linkerFlags + "\"" : ""));
+        PlayerSettings.SetAdditionalIl2CppArgs("--generic-virtual-method-iterations=5 " + (additionalLibraries != "" ? "--additional-libraries \""+additionalLibraries+"\"" : "") + (compilerFlags != "" ? "--compiler-flags=\"" + compilerFlags + "\" " : "") + (linkerFlags != "" ? "--linker-flags=\"" + linkerFlags + "\"" : ""));
     }
 }

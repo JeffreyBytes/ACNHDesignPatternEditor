@@ -50916,7 +50916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63d8fbeaa87926d438a3c11337fe5893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tooltip: Patreon
+  Tooltip: Ko-Fi
   Offset: {x: 0, y: 130}
 --- !u!114 &1165255141
 MonoBehaviour:

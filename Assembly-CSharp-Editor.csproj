@@ -415,14 +415,6 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\2022.3.62f3\Editor\Data\PlaybackEngines\LinuxStandaloneSupport\UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Svg.Custom">
-      <HintPath>Assets\SkiaSharp\Library\Svg.Custom.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>Assets\SkiaSharp\Dependencies\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@3.2.2\Runtime\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -431,8 +423,8 @@
       <HintPath>Assets\Plugins\System.Drawing.Design.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ExCSS">
-      <HintPath>Assets\SkiaSharp\Library\ExCSS.dll</HintPath>
+    <Reference Include="SixLabors.ImageSharp">
+      <HintPath>Assets\Plugins\ImageSharp\SixLabors.ImageSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework">
@@ -1045,10 +1037,6 @@
       <Project>{5C89FB5E-CA59-9015-1888-CE1075FE7F63}</Project>
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="SkiaSharp.Unity.csproj">
-      <Project>{D20DDA70-7CFA-B636-5750-CCBE1B9C66C1}</Project>
-      <Name>SkiaSharp.Unity</Name>
-    </ProjectReference>
     <ProjectReference Include="Coffee.SoftMaskForUGUI.csproj">
       <Project>{D94783F7-0FD3-A128-25DC-C7F57F91191B}</Project>
       <Name>Coffee.SoftMaskForUGUI</Name>
@@ -1056,10 +1044,6 @@
     <ProjectReference Include="Coffee.SoftMaskForUGUI.Editor.csproj">
       <Project>{68444641-A1CD-96A9-8A60-14A1B1671263}</Project>
       <Name>Coffee.SoftMaskForUGUI.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="SkiaSharp.csproj">
-      <Project>{742A405C-72A8-28E1-8910-13338132FBC4}</Project>
-      <Name>SkiaSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

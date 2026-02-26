@@ -395,8 +395,8 @@ public class Tools : MonoBehaviour
 			Editor.CurrentBrush.Hardness = (int) BrushHardness.value;
 			Editor.CurrentBrush.RecalculateBrush();
 		}
-
-		if (CurrentTool == Tool.ColorPicker)
+		
+        if (CurrentTool == Tool.ColorPicker)
 		{
 			Editor.ChangeTool(new ColorPickerTool());
 
@@ -472,7 +472,7 @@ public class Tools : MonoBehaviour
 			BucketFillOptions.PopOut();
 			RectOptions.PopOut();
 			TransformOptions.PopUp();
-		}
+        }
 
 		if (CurrentTool == Tool.None)
 		{

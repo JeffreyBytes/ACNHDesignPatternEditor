@@ -154,14 +154,10 @@
     <None Include="Assets\Meshs\Clothing.shader" />
     <None Include="Assets\Coffee\UIExtensions\SoftMaskForUGUI\Shaders\TMP_SDF (SoftMaskable).shader" />
     <None Include="Assets\log.txt" />
-    <None Include="Assets\SkiaSharp\Library\System.Buffers.dll" />
     <None Include="Assets\Coffee\UIExtensions\SoftMaskForUGUI\Shaders\TMP_Sprite (SoftMaskable).shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
-    <None Include="Assets\SkiaSharp\Library\Svg.Custom.dll" />
     <None Include="Assets\Meshs\StandardShader-DoubleSided.shader" />
-    <None Include="Assets\SkiaSharp\Library\win-x86\libHarfBuzzSharp.dll" />
     <None Include="Assets\Coffee\UIExtensions\SoftMaskForUGUI\Shaders\TMP_SDF-Mobile (SoftMaskable).shader" />
-    <None Include="Assets\SkiaSharp\Dependencies\System.Runtime.CompilerServices.Unsafe.dll" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
@@ -171,20 +167,15 @@
     <None Include="Assets\Coffee\UIExtensions\SoftMaskForUGUI\Shaders\Resources\SoftMask.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
-    <None Include="Assets\SkiaSharp\Library\win-x86\libSkiaSharp.dll" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
-    <None Include="Assets\SkiaSharp\Library\win-x64\libSkiaSharp.dll" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\Meshs\ClothingSecondUV.shader" />
-    <None Include="Assets\SkiaSharp\Library\win-x64\libHarfBuzzSharp.dll" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
-    <None Include="Assets\SkiaSharp\Library\ExCSS.dll" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\Meshs\ClothingNoNormal.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
-    <None Include="Assets\SkiaSharp\Library\System.Memory.dll" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -519,12 +510,8 @@
       <HintPath>C:\Program Files\Unity\Hub\Editor\2022.3.62f3\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Svg.Custom">
-      <HintPath>Assets\SkiaSharp\Library\Svg.Custom.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>Assets\SkiaSharp\Dependencies\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>Assets\Plugins\ImageSharp\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
@@ -535,8 +522,8 @@
       <HintPath>Assets\Plugins\System.Drawing.Design.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ExCSS">
-      <HintPath>Assets\SkiaSharp\Library\ExCSS.dll</HintPath>
+    <Reference Include="SixLabors.ImageSharp">
+      <HintPath>Assets\Plugins\ImageSharp\SixLabors.ImageSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
@@ -1133,10 +1120,6 @@
       <Project>{356C4B64-D7D1-189B-3FF8-726D611C6685}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
     </ProjectReference>
-    <ProjectReference Include="SkiaSharp.Unity.csproj">
-      <Project>{D20DDA70-7CFA-B636-5750-CCBE1B9C66C1}</Project>
-      <Name>SkiaSharp.Unity</Name>
-    </ProjectReference>
     <ProjectReference Include="Coffee.SoftMaskForUGUI.csproj">
       <Project>{D94783F7-0FD3-A128-25DC-C7F57F91191B}</Project>
       <Name>Coffee.SoftMaskForUGUI</Name>
@@ -1144,10 +1127,6 @@
     <ProjectReference Include="Coffee.SoftMaskForUGUI.Editor.csproj">
       <Project>{68444641-A1CD-96A9-8A60-14A1B1671263}</Project>
       <Name>Coffee.SoftMaskForUGUI.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="SkiaSharp.csproj">
-      <Project>{742A405C-72A8-28E1-8910-13338132FBC4}</Project>
-      <Name>SkiaSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

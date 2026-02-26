@@ -222,6 +222,7 @@ public class SubPattern
 				for (int y = 0; y < Height; y++)
 					for (int x = 0; x < Width; x++)
 						layerColors[x + (Height - 1 - y) * Width] = colors[Part.X + x + (pattern.Height - 1 - (Part.Y + y)) * pattern.Width];
+				backgroundLayer.Texture.Apply();
 						//backgroundLayer.Texture.SetPixel(x, y, pattern.Bitmap.GetPixel(Part.X + x, (pattern.Height - 1 - Part.Y) + y));
 			}
 			Layers.Add(backgroundLayer);

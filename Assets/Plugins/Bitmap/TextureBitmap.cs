@@ -6,7 +6,9 @@ using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 using SimplePaletteQuantizer.Quantizers;
 using System.Diagnostics;
-
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.PixelFormats;
 public unsafe class TextureBitmap
 {
 	[StructLayout(LayoutKind.Sequential)]
@@ -147,229 +149,13 @@ public unsafe class TextureBitmap
 			return ToARGB();
 		}
 	}
-
-	private static Dictionary<SkiaSharp.SKColorType, byte> ColorSize = new Dictionary<SkiaSharp.SKColorType, byte>()
-	{
-		{ SkiaSharp.SKColorType.Alpha8,      1 },
-		{ SkiaSharp.SKColorType.Argb4444,    2 },
-		{ SkiaSharp.SKColorType.Bgra8888,    4 },
-		{ SkiaSharp.SKColorType.Gray8,       1 },
-		{ SkiaSharp.SKColorType.Rgb101010x,  4 },
-		{ SkiaSharp.SKColorType.Rgb565,      2 },
-		{ SkiaSharp.SKColorType.Rgb888x,     4 },
-		{ SkiaSharp.SKColorType.Rgba1010102, 4 },
-		{ SkiaSharp.SKColorType.Rgba8888,    4 }
-	};
-
-	private static Dictionary<SkiaSharp.SKColorType, Action<IntPtr, IntPtr, int, int>> ColorTransformers = new Dictionary<SkiaSharp.SKColorType, Action<IntPtr, IntPtr, int, int>>()
-	{
-		{SkiaSharp.SKColorType.Bgra8888,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 4;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					*(ptrOut + o + 0) = *(ptrIn + i + 2);
-					*(ptrOut + o + 1) = *(ptrIn + i + 1);
-					*(ptrOut + o + 2) = *(ptrIn + i + 0);
-					*(ptrOut + o + 3) = *(ptrIn + i + 3);
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Alpha8,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 1;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					*(ptrOut + o + 0) = 0;
-					*(ptrOut + o + 1) = 0;
-					*(ptrOut + o + 2) = 0;
-					*(ptrOut + o + 3) = *(ptrIn + i + 0);
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Argb4444,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 2;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					*(ptrOut + o + 3) = (byte) (*(ptrIn + i + 0) >> 4);
-					*(ptrOut + o + 0) = (byte) (*(ptrIn + i + 0) & 0x0F);
-					*(ptrOut + o + 1) = (byte) (*(ptrIn + i + 1) >> 4);
-					*(ptrOut + o + 2) = (byte) (*(ptrIn + i + 1) & 0x0F);
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Gray8,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 1;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					*(ptrOut + o + 3) = *(ptrIn + i + 0);
-					*(ptrOut + o + 0) = *(ptrIn + i + 0);
-					*(ptrOut + o + 1) = *(ptrIn + i + 0);
-					*(ptrOut + o + 2) = 255;
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Rgb101010x,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 4;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					byte byte0 = *(ptrIn + i + 0);
-					byte byte1 = *(ptrIn + i + 1);
-					byte byte2 = *(ptrIn + i + 2);
-					byte byte3 = *(ptrIn + i + 3);
-					int r = (((int)byte0) << 2) + (byte1 >> 6);
-					int g = ((byte1 & (0xFF >> 2)) << 4) + (byte2 >> 4);
-					int b = ((byte2 & (0xFF >> 4)) << 6) + (byte3 >> 2);
-					*(ptrOut + o + 0) = (byte) (r / 4);
-					*(ptrOut + o + 1) = (byte) (g / 4);
-					*(ptrOut + o + 2) = (byte) (b / 4);
-					*(ptrOut + o + 3) = 255;
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Rgb565,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 2;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					byte byte0 = *(ptrIn + i + 0);
-					byte byte1 = *(ptrIn + i + 1);
-					int r = (((int)byte0) >> 3);
-					int g = ((byte0 & (0xFF >> 3)) << 3) + (byte1 >> 3);
-					int b = ((byte1 & (0xFF >> 3)));
-					*(ptrOut + o + 0) = (byte) (r * 8.22f);
-					*(ptrOut + o + 1) = (byte) (g * 4.04f);
-					*(ptrOut + o + 2) = (byte) (b * 8.22f);
-					*(ptrOut + o + 3) = 255;
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Rgb888x,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 4;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					*(ptrOut + o + 0) = *(ptrIn + i + 0);
-					*(ptrOut + o + 1) = *(ptrIn + i + 1);
-					*(ptrOut + o + 2) = *(ptrIn + i + 2);
-					*(ptrOut + o + 3) = 255;
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Rgba1010102,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 4;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					byte byte0 = *(ptrIn + i + 0);
-					byte byte1 = *(ptrIn + i + 1);
-					byte byte2 = *(ptrIn + i + 2);
-					byte byte3 = *(ptrIn + i + 3);
-					int r = (((int)byte0) << 2) + (byte1 >> 6);
-					int g = ((byte1 & (0xFF >> 2)) << 4) + (byte2 >> 4);
-					int b = ((byte2 & (0xFF >> 4)) << 6) + (byte3 >> 2);
-					int a = ((byte3 & (0xFF >> 2)));
-					*(ptrOut + o + 0) = (byte) (r / 4);
-					*(ptrOut + o + 1) = (byte) (g / 4);
-					*(ptrOut + o + 2) = (byte) (b / 4);
-					*(ptrOut + o + 3) = (byte) (a * 85);
-					o += 4;
-				}
-			}
-		},
-		{SkiaSharp.SKColorType.Rgba8888,
-			(IntPtr @in, IntPtr @out, int width, int height) =>
-			{
-				byte pixelSize = 4;
-				int size = width * height * pixelSize;
-				byte* ptrIn = (byte*) @in.ToPointer();
-				byte* ptrOut = (byte*) @out.ToPointer();
-				for (int i = 0, o = 0; i < size; i+= pixelSize)
-				{
-					*(ptrOut + o + 0) = *(ptrIn + i + 0);
-					*(ptrOut + o + 1) = *(ptrIn + i + 1);
-					*(ptrOut + o + 2) = *(ptrIn + i + 2);
-					*(ptrOut + o + 3) = *(ptrIn + i + 3);
-					o += 4;
-				}
-			}
-		}
-	};
 	public Texture2D Texture { get; private set; }
 	public IntPtr Bytes { get; private set; }
 	public int Width { get; private set; }
 	public int Height { get; private set; }
 	public int PixelSize { get { return 4; } }
 
-
-	private Dictionary<SkiaSharp.SKColorType, TextureFormat> SkiaToTexture = new Dictionary<SkiaSharp.SKColorType, TextureFormat>()
-	{ 
-		{ SkiaSharp.SKColorType.Bgra8888, TextureFormat.BGRA32 },
-		{ SkiaSharp.SKColorType.Rgba8888, TextureFormat.RGBA32 },
-		{ SkiaSharp.SKColorType.Rgb888x,  TextureFormat.RGBA32 }
-	};
 	private CommandBuffer CommandBuffer;
-
-#if UNITY_EDITOR
-	[System.Runtime.InteropServices.DllImport("NativeTextureBitmap.dll")]
-#else
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-#endif
-	static extern System.IntPtr GetTextureBitmapUpdateCallback();
-#if UNITY_EDITOR
-	[System.Runtime.InteropServices.DllImport("NativeTextureBitmap.dll")]
-#else
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-#endif
-	static extern void RegisterTexture(uint id, IntPtr ptr);
-#if UNITY_EDITOR
-	[System.Runtime.InteropServices.DllImport("NativeTextureBitmap.dll")]
-#else
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-#endif
-	static extern void UnregisterTexture(uint id);
 
 	private static uint CurrentID = 0;
 	private uint ID;
@@ -398,6 +184,10 @@ public unsafe class TextureBitmap
 		Height = height;
 
 		Bytes = Marshal.AllocHGlobal(width * height * PixelSize);
+		var pointer = (byte*) Bytes.ToPointer();
+		for (var i = 0; i < width * height * PixelSize; i++)
+			*(pointer + i) = 0;
+
 		//RegisterTexture(ID, Bytes);
 
 		if (createBackgroundTexture)
@@ -997,10 +787,32 @@ public unsafe class TextureBitmap
 
 	public static TextureBitmap Load(byte[] bytes, bool createBackgroundTexture = true)
 	{
-		var bitmap = SkiaSharp.SKBitmap.Decode(bytes);
+		try
+		{
+			using (var image = Image.Load<Rgba32>(bytes))
+			{
+				var result = new TextureBitmap(image.Width, image.Height, createBackgroundTexture);
+				byte[] data = new byte[image.Width * image.Height * 4];
+				image.CopyPixelDataTo(data);
+				byte* myPointer = (byte*) result.Bytes.ToPointer();
+				for (var i = 0; i < data.Length; i++)
+					*(myPointer + i) = data[i];
+				result.FlipY();
+				return result;
+			}
+		}
+		catch (UnknownImageFormatException e1)
+		{
+            throw new Exception("This file format is not supported.");
+        }
+		catch (Exception e)
+		{
+			UnityEngine.Debug.LogError(e);
+			throw new Exception("An unknown error occured.");
+		}
+        /*var bitmap = SkiaSharp.SKBitmap.Decode(bytes);
 		if (ColorTransformers.ContainsKey(bitmap.ColorType))
 		{
-			var result = new TextureBitmap(bitmap.Width, bitmap.Height, createBackgroundTexture);
 			var reader = ColorTransformers[bitmap.ColorType];
 			int pixelSize = ColorSize[bitmap.ColorType];
 
@@ -1016,7 +828,7 @@ public unsafe class TextureBitmap
 		{
 			bitmap.Dispose();
 			throw new ArgumentException("Image have an unsupported color type: " + bitmap.ColorType);
-		}
+		}*/
 	}
 
 	public void LoadFrom(string filename)
@@ -1028,25 +840,31 @@ public unsafe class TextureBitmap
 	public void LoadFrom(byte[] bytes)
 	{
 		if (Disposed) return;
-		var bitmap = SkiaSharp.SKBitmap.Decode(bytes);
-		if (ColorTransformers.ContainsKey(bitmap.ColorType))
-		{
-			var reader = ColorTransformers[bitmap.ColorType];
-			int pixelSize = ColorSize[bitmap.ColorType];
 
-			var pixels = bitmap.GetPixels();
-			InternalResize(bitmap.Width, bitmap.Height);
-			ColorTransformers[bitmap.ColorType](pixels, Bytes, Width, Height);
-			FlipY();
-			bitmap.Dispose();
-			this.Apply();
-		}
-		else
+		try
 		{
-			bitmap.Dispose();
-			throw new ArgumentException("Image have an unsupported color type: " + bitmap.ColorType);
+			using (var image = Image.Load<Rgba32>(bytes))
+			{
+				InternalResize(image.Width, image.Height);
+				byte[] data = new byte[image.Width * image.Height * 4];
+				image.CopyPixelDataTo(data);
+				byte* myPointer = (byte*) Bytes.ToPointer();
+				for (var i = 0; i < data.Length; i++)
+					*(myPointer + i) = data[i];
+				FlipY();
+			}
 		}
-	}
+
+        catch (UnknownImageFormatException e1)
+        {
+            throw new Exception("This file format is not supported.");
+        }
+        catch (Exception e)
+        {
+            UnityEngine.Debug.LogError(e);
+            throw new Exception("An unknown error occured.");
+        }
+    }
 
 	public void UltraContrast(int threshold)
 	{
@@ -1068,37 +886,43 @@ public unsafe class TextureBitmap
 	{
 		if (Disposed) return;
 		filename = System.IO.Path.GetFullPath(filename);
-		if (filename.ToLowerInvariant().EndsWith(".png"))
-			Save(filename, SkiaSharp.SKEncodedImageFormat.Png);
-		else if (filename.ToLowerInvariant().EndsWith(".jpg") || filename.ToLowerInvariant().EndsWith(".jpeg"))
-			Save(filename, SkiaSharp.SKEncodedImageFormat.Jpeg);
+		if (filename.ToLowerInvariant().EndsWith(".jpg") || filename.ToLowerInvariant().EndsWith(".jpeg"))
+			Save(filename, ImageFormat.JPG);
 		else if (filename.ToLowerInvariant().EndsWith(".bmp"))
-			Save(filename, SkiaSharp.SKEncodedImageFormat.Bmp);
+			Save(filename, ImageFormat.BMP);
 		else if (filename.ToLowerInvariant().EndsWith(".gif"))
-			Save(filename, SkiaSharp.SKEncodedImageFormat.Gif);
+			Save(filename, ImageFormat.GIF);
 		else if (filename.ToLowerInvariant().EndsWith(".webp"))
-			Save(filename, SkiaSharp.SKEncodedImageFormat.Webp);
-	}
+			Save(filename, ImageFormat.GIF);
+		else
+            Save(filename, ImageFormat.PNG);
+    }
 
-	public void Save(string filename, SkiaSharp.SKEncodedImageFormat format)
+	public void Save(string filename, ImageFormat format)
 	{
 		if (Disposed) return;
-		SkiaSharp.SKBitmap bitmap = new SkiaSharp.SKBitmap(this.Width, this.Height, false);
-		int w = Width;
-		int h = Height;
-		var colorPtr = this.GetColors();
-		for (int y = 0; y < h; y++)
-		{
-			for (int x = 0; x < w; x++)
+		Argb32[] data = new Argb32[Width * Height];
+        byte* myPointer = (byte*) Bytes.ToPointer();
+        for (int y = 0; y < Height; y++)
+        {
+			for (int x = 0; x < Width; x++)
 			{
-				var col = *(colorPtr + x + (h - 1 - y) * h);
-				bitmap.SetPixel(x, y, new SkiaSharp.SKColor(col.R, col.G, col.B, col.A));
+				var index = (x + (Height - 1 - y) * Height) * 4;
+				data[x + y * Height] = new Argb32(*(myPointer + index + 0), *(myPointer + index + 1), *(myPointer + index + 2), *(myPointer + index + 3));
 			}
-		}
-		var img = SkiaSharp.SKImage.FromBitmap(bitmap);
-		var data = img.Encode(format, 100);
-		System.IO.File.WriteAllBytes(filename, data.ToArray());
-		img.Dispose();
-		bitmap.Dispose();
+        }
+		using (var image = Image.LoadPixelData<Argb32>(data, Width, Height))
+		{
+			if (format == ImageFormat.BMP)
+				image.SaveAsBmp(filename);
+            else if (format == ImageFormat.GIF)
+                image.SaveAsGif(filename);
+            else if (format == ImageFormat.JPG)
+                image.SaveAsJpeg(filename);
+            else if (format == ImageFormat.WEBP)
+                image.SaveAsWebp(filename);
+            else if (format == ImageFormat.PNG)
+                image.SaveAsPng(filename);
+        }
 	}
 }
