@@ -1,9 +1,5 @@
-﻿using SFB;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -829,8 +825,8 @@ BrushOptions.PopUp();
 
 		SaveProjectButton.OnClick = () =>
 		{
-			var path = StandaloneFileBrowser.SaveFilePanel("Save project", "", "project.acnhp", new ExtensionFilter[] { new ExtensionFilter("ACNH project", new string[] { "acnhp" }) });
-			if (path != null && path.Length > 0)
+            var path = TinyFileDialogs.SaveFileDialog("Save project", "", new List<string>() { "*.acnhp" }, "ACNH Project");
+			if (path != null)
 			{
 				try
 				{
@@ -848,15 +844,15 @@ BrushOptions.PopUp();
 		};
 
 		LoadProjectButton.OnClick = () =>
-		{
-			var path = StandaloneFileBrowser.OpenFilePanel("Load project", "", new ExtensionFilter[] { new ExtensionFilter("ACNH project", new string[] { "acnhp" }) }, false);
-			if (path != null && path.Length > 0)
+        {
+            var path = TinyFileDialogs.OpenFileDialog("Save project", "", new List<string>() { "*.acnhp" }, "ACNH Project", false);
+			if (path != null)
 			{
 				try
 				{
-					if (path[0].EndsWith(".acnhp"))
+					if (path.EndsWith(".acnhp"))
 					{
-						Editor.OpenProject(System.IO.File.ReadAllBytes(path[0]));
+						Editor.OpenProject(System.IO.File.ReadAllBytes(path));
 					}
 				}
 				catch (System.ArgumentException e)

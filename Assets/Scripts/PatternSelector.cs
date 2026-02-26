@@ -1,4 +1,5 @@
-﻿using SFB;
+﻿using DesignServer;
+using SimplePaletteQuantizer.Quantizers.XiaolinWu;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using ZXing;
 using ZXing.QrCode;
-using SimplePaletteQuantizer.Quantizers.XiaolinWu;
 
 public class PatternSelector : MonoBehaviour
 {
@@ -14,13 +14,16 @@ public class PatternSelector : MonoBehaviour
 	public Transform Patterns;
 	public GameObject PatternPrefab;
 	public ActionMenu ActionMenu;
+	public GameObject PatternExchange;
 	public GameObject Save;
 	public GameObject Cancel;
 	public GameObject MainButtons;
 	public GameObject CloneSwapButtons;
+	private Pop PatternExchangePop;
 	private Pop SavePop;
 	private Pop CancelPop;
-	private MenuButton SaveButton;
+    private MenuButton PatternExchangeButton;
+    private MenuButton SaveButton;
 	private MenuButton CancelButton;
 	public MenuButton CancelCloneSwapButton;
 	public Image DesignsIcon;
@@ -37,6 +40,7 @@ public class PatternSelector : MonoBehaviour
 	private float LastOpenPhase = -1f;
 	private PatternSelectorPattern Selected = null;
 	private PatternSelectorPattern[] PatternObjects = new PatternSelectorPattern[100];
+	private bool PreventSwitch = false;
 	public enum Menu
 	{
 		None,
@@ -47,15 +51,23 @@ public class PatternSelector : MonoBehaviour
 	// Start is called before the first frame update
 	void OnEnable()
     {
-		SavePop = Save.GetComponent<Pop>();
-		CancelPop = Cancel.GetComponent<Pop>();
-		SaveButton = Save.transform.GetChild(0).GetComponent<MenuButton>();
+        PatternExchangePop = PatternExchange.GetComponent<Pop>();
+        SavePop = Save.GetComponent<Pop>();
+        CancelPop = Cancel.GetComponent<Pop>();
+        PatternExchangeButton = PatternExchange.transform.GetChild(0).GetComponent<MenuButton>();
+        SaveButton = Save.transform.GetChild(0).GetComponent<MenuButton>();
 		CancelButton = Cancel.transform.GetChild(0).GetComponent<MenuButton>();
 	}
 
-	void SwitchToDesigns()
+	public void ReleaseLock()
 	{
-		if (CurrentMenu != Menu.Designs)
+		PreventSwitch = false;
+	}
+
+    public void SwitchToDesigns(bool preventSwitch = false)
+	{
+        PreventSwitch = preventSwitch;
+        if (CurrentMenu != Menu.Designs)
 		{
 			ProDesignsTooltip.SetActive(false);
 			DesignsTooltip.SetActive(true);
@@ -68,8 +80,9 @@ public class PatternSelector : MonoBehaviour
 		}
 	}
 
-	void SwitchToProDesigns()
+	public void SwitchToProDesigns(bool preventSwitch = false)
 	{
+		PreventSwitch = preventSwitch;
 		if (CurrentMenu != Menu.ProDesigns)
 		{
 			DesignsTooltip.SetActive(false);
@@ -87,21 +100,31 @@ public class PatternSelector : MonoBehaviour
 		var click = new EventTrigger.Entry();
 		click.eventID = EventTriggerType.PointerClick;
 		click.callback.AddListener((eventData) => {
-			SwitchToDesigns();
-			ActionMenu.Close();
+			if (!PreventSwitch)
+			{
+				SwitchToDesigns();
+				ActionMenu.Close();
+			}
 		});
 		DesignsEventTrigger.triggers.Add(click);
 
 		click = new EventTrigger.Entry();
 		click.eventID = EventTriggerType.PointerClick;
 		click.callback.AddListener((eventData) => {
-			SwitchToProDesigns();
-			ActionMenu.Close();
+			if (!PreventSwitch)
+			{
+				SwitchToProDesigns();
+				ActionMenu.Close();
+			}
 		});
 		ProDesignsEventTrigger.triggers.Add(click);
 
 		CloneSwapButtons.SetActive(false);
-		SaveButton.OnClick += () =>
+        PatternExchangeButton.OnClick += () =>
+        {
+            Controller.Instance.SwitchToPatternExchange();
+        };
+        SaveButton.OnClick += () =>
 		{
 			Controller.Instance.Save();
 		};
@@ -117,6 +140,7 @@ public class PatternSelector : MonoBehaviour
 
 	public void Close()
 	{
+		PreventSwitch = false;
 		IsOpened = false;
 		StartCoroutine(DoClose());
 	}
@@ -187,19 +211,23 @@ public class PatternSelector : MonoBehaviour
 	{
 		Controller.Instance.PlayPopoutSound();
 		ActionMenu.Close();
-		CancelPop.PopOut();
-		yield return new WaitForSeconds(0.1f);
+        PatternExchangePop.PopOut();
+        yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
+        CancelPop.PopOut();
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		SavePop.PopOut();
 	}
 
 	IEnumerator DoOpen()
 	{
-		SavePop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+        SavePop.PopUp();
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		CancelPop.PopUp();
-	}
+        yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
+        PatternExchangePop.PopUp();
+    }
 
-	void SavePattern(DesignPattern editPattern)
+    void SavePattern(DesignPattern editPattern)
 	{
 		Controller.Instance.NameInput.SetName(editPattern.Name);
 		Controller.Instance.SwitchToNameInput(
@@ -229,6 +257,7 @@ public class PatternSelector : MonoBehaviour
 			//resultPattern.IsPro = resultPattern.Type != DesignPattern.TypeEnum.SimplePattern;
 			resultPattern.Index = editPattern.Index;
 			resultPattern.ChangeOwnership(Controller.Instance.CurrentSavegame.PersonalID);
+			resultPattern.IsSet = true;
 			resultPattern.Name = editPattern.Name;
 			SavePattern(resultPattern);
 		},
@@ -240,11 +269,19 @@ public class PatternSelector : MonoBehaviour
 	}
 	public void SelectPattern(PatternSelectorPattern pattern)
 	{
-		if (Controller.Instance.CurrentOperation != null && Controller.Instance.CurrentOperation is IPatternSelectorOperation patternSelectorOperation)
-		{
-			patternSelectorOperation.SelectPattern(pattern.Pattern);
-		}
-		else
+        if (Controller.Instance.CurrentOperation != null && Controller.Instance.CurrentOperation is IMultiplePatternSelectorOperation multiSelectorOperation)
+        {
+			multiSelectorOperation.SelectPattern(pattern.Pattern);
+        }
+        else if (Controller.Instance.CurrentOperation != null && Controller.Instance.CurrentOperation is ISelectSecondPatternOperation patternSelectorOperation)
+        {
+            patternSelectorOperation.SelectPattern(pattern.Pattern);
+        }
+        else if (Controller.Instance.CurrentOperation != null && Controller.Instance.CurrentOperation is ISelectPatternOperation patternSelectionOperation)
+        {
+			patternSelectionOperation.SelectPattern(pattern.Pattern);
+        }
+        else
 		{
 			if (Selected != null)
 				Selected.Unselect();
@@ -304,6 +341,7 @@ public class PatternSelector : MonoBehaviour
 						"<align=\"center\"><#827157>Which format do you want to import?",
 						(format) =>
 						{
+							/*
 							if (format == FormatPopup.Format.Online)
 							{
 								Controller.Instance.SwitchToPatternExchange(
@@ -334,16 +372,16 @@ public class PatternSelector : MonoBehaviour
 									}
 								);
 							}
-							else if (format == FormatPopup.Format.ACNH)
-							{
-								var path = StandaloneFileBrowser.OpenFilePanel("Import design", "", new ExtensionFilter[] { new ExtensionFilter("ACNH file", new string[] { "acnh" }) }, false);
-								if (path != null && path.Length > 0)
+							else */if (format == FormatPopup.Format.ACNH)
+                            {
+                                var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnh" }, "Design", false);
+                                if (path != null)
 								{
 									try
 									{
-										if (path[0].EndsWith(".acnh"))
+										if (path.EndsWith(".acnh"))
 										{
-											var file = new ACNHFileFormat(System.IO.File.ReadAllBytes(path[0]));
+											var file = new ACNHFileFormat(System.IO.File.ReadAllBytes(path));
 											if (file.IsPro != (pattern.Pattern is ProDesignPattern))
 											{
 												Controller.Instance.Popup.SetText("Basic and pro designs are not interchangeable. (You selected a " + (pattern.Pattern is ProDesignPattern ? "pro design" : "basic design") + " but wanted to import a "+ (file.IsPro ? "pro design" : "basic design") + ")", false, () => { return true; });
@@ -378,14 +416,14 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.ACNL)
 							{
-								var path = StandaloneFileBrowser.OpenFilePanel("Import design", "", new ExtensionFilter[] { new ExtensionFilter("ACNL file", new string[] { "acnl" }) }, false);
-								if (path != null && path.Length > 0)
+								var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnl" }, "Design", false);
+                                if (path != null)
 								{
 									try
 									{
-										if (path[0].EndsWith(".acnl"))
+										if (path.EndsWith(".acnl"))
 										{
-											var file = new ACNLFileFormat(System.IO.File.ReadAllBytes(path[0]));
+											var file = new ACNLFileFormat(System.IO.File.ReadAllBytes(path));
 													
 											if (file.IsPro != pattern.Pattern is ProDesignPattern)
 											{
@@ -421,13 +459,13 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.Image)
 							{
-								var path = StandaloneFileBrowser.OpenFilePanel("Import design", "", new ExtensionFilter[] { new ExtensionFilter("Image", new string[] { "png", "jpg", "jpeg", "bmp", "gif", "webp"}) }, false); 
-								if (path != null && path.Length > 0)
+								var path = TinyFileDialogs.OpenFileDialog("Import image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp" }, "Image", false);
+								if (path != null)
 								{
 									TextureBitmap bmp = null;
 									try
 									{
-										bmp = TextureBitmap.Load(path[0], false);
+										bmp = TextureBitmap.Load(path, false);
 												
 										if (pattern.Pattern is ProDesignPattern)
 										{
@@ -464,7 +502,7 @@ public class PatternSelector : MonoBehaviour
 													else
 													{
 														if (bmp.Width > 64 || bmp.Height > 64)
-															bmp.Resample(ResamplingFilters.Lanczos8, 64, 64);
+															bmp.Resample(ResamplingFilters.Box, 64, 64);
 
 														bmp.Quantize(new WuColorQuantizer(), 15);
 														Controller.Instance.SwitchToNameInput(
@@ -526,7 +564,7 @@ public class PatternSelector : MonoBehaviour
 											else
 											{
 												if (bmp.Width > 32 || bmp.Height > 32)
-													bmp.Resample(ResamplingFilters.Lanczos8, 32, 32);
+													bmp.Resample(ResamplingFilters.Box, 32, 32);
 												bmp.Quantize(new WuColorQuantizer(), 15);
 												Controller.Instance.SwitchToNameInput(
 													() =>
@@ -559,14 +597,14 @@ public class PatternSelector : MonoBehaviour
 								}
 							}
 							else if (format == FormatPopup.Format.QR)
-							{
-								var path = StandaloneFileBrowser.OpenFilePanel("Import image", "", new ExtensionFilter[] { new ExtensionFilter("QR Code Image", new string[] { "png", "jpg", "jpeg", "bmp", "gif", "webp" }) }, false);
-								if (path != null && path.Length > 0)
+                            {
+                                var path = TinyFileDialogs.OpenFileDialog("Import image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp" }, "QR Code Image", false);
+                                if (path != null)
 								{
 									TextureBitmap bmp = null;
 									try
 									{
-										bmp = TextureBitmap.Load(path[0], false);
+										bmp = TextureBitmap.Load(path, false);
 										var scanner = new BarcodeReader()
 										{
 											TryInverted = true,
@@ -650,7 +688,7 @@ public class PatternSelector : MonoBehaviour
 						true,
 						true,
 						true, 
-						true
+						false
 					);
 				})),
 				("Export design", (System.Action) (() => {
@@ -677,9 +715,9 @@ public class PatternSelector : MonoBehaviour
 								);
 							}
 							if (format == FormatPopup.Format.ACNH)
-							{
-								var path = StandaloneFileBrowser.SaveFilePanel("Export design", "", "design.acnh", new ExtensionFilter[] { new ExtensionFilter("ACNH Pattern file", new string[] { "acnh" }) });
-								if (path != null && path.Length > 0)
+                            {
+                                var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnh" }, "Design");
+                                if (path != null)
 								{
 									try
 									{
@@ -696,8 +734,8 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.ACNL)
 							{
-								var path = StandaloneFileBrowser.SaveFilePanel("Export design", "", "design.acnl", new ExtensionFilter[] { new ExtensionFilter("ACNL Pattern file", new string[] { "acnl" }) });
-								if (path != null && path.Length > 0)
+								var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnl" }, "Design");
+								if (path != null)
 								{
 									try
 									{
@@ -714,8 +752,8 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.Image)
 							{
-								var path = StandaloneFileBrowser.SaveFilePanel("Export image", "", "image.png", new ExtensionFilter[] { new ExtensionFilter("Image", new string[] { "png", "jpg", "jpeg", "bmp", "gif" }) });
-								if (path != null && path.Length > 0)
+								var path = TinyFileDialogs.SaveFileDialog("Export image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif" }, "Image");
+								if (path != null)
 								{
 									var bitmap = pattern.Pattern.GetBitmap();
 									bitmap.Save(path);
@@ -724,7 +762,7 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.QR)
 							{
-								var path = StandaloneFileBrowser.SaveFilePanel("Export design", "", "qrcode.png", new ExtensionFilter[] { new ExtensionFilter("QR Code", new string[] { "png" }) });
+                                var path = TinyFileDialogs.SaveFileDialog("Export image", "", new List<string>() { "*.png" }, "QR Code");
 								if (path != null && path.Length > 0)
 								{
 									try
@@ -816,8 +854,13 @@ public class PatternSelector : MonoBehaviour
 						true,
 						true
 					);
-				}))
-			};
+				})),
+                ("Delete multiple", (System.Action) (() => {
+                    var op = new DeleteMultipleOperation();
+					op.SelectPattern(Selected.Pattern);
+                    Controller.Instance.StartOperation(op);
+                })),
+            };
 			ActionMenu.ShowActions(
 				actions.ToArray()
 			);
@@ -850,6 +893,14 @@ public class PatternSelector : MonoBehaviour
 	}
 	private bool OperationRunning = false;
 
+	public void UnhighlightAll()
+	{
+        for (int i = 0; i < PatternObjects.Length; i++)
+        {
+			PatternObjects[i].Unhighlight();
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -862,10 +913,10 @@ public class PatternSelector : MonoBehaviour
 		if (Controller.Instance.CurrentOperation != null)
 		{
 			OperationRunning = true;
-			ActionMenu.Close();
-			if (Controller.Instance.CurrentOperation is IPatternSelectorOperation && Controller.Instance.CurrentOperation is IPatternOperation patternOperation)
+			if (Controller.Instance.CurrentOperation is ISelectSecondPatternOperation patternOperation)
 			{
-				var pattern = patternOperation.GetPattern();
+                ActionMenu.Close();
+                var pattern = patternOperation.GetPattern();
 				for (int i = 0; i < PatternObjects.Length; i++)
 				{
 					if (PatternObjects[i].Pattern == pattern)
@@ -876,7 +927,20 @@ public class PatternSelector : MonoBehaviour
 				MainButtons.SetActive(false);
 				CloneSwapButtons.SetActive(true);
 			}
-		}
+            if (Controller.Instance.CurrentOperation is IMultiplePatternSelectorOperation multiSelect)
+            {
+                var patterns = multiSelect.GetPatterns();
+                for (int i = 0; i < PatternObjects.Length; i++)
+                {
+                    if (patterns.Contains(PatternObjects[i].Pattern))
+                        PatternObjects[i].Highlight();
+                    else
+                        PatternObjects[i].Unhighlight();
+                }
+                MainButtons.SetActive(false);
+                CloneSwapButtons.SetActive(false);
+            }
+        }
 		else
 		{
 			if (OperationRunning)

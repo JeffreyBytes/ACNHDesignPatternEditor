@@ -28,7 +28,7 @@ public class HowToExport : MonoBehaviour
 				StartCoroutine(ShowStep3());
 				Controller.Instance.Popup.SetText("Open up <#FF6666>JKSV<#FFFFFF>. In the application select \"<#FF6666>Dev Sv.<#FFFFFF>\". Then \"<#FF6666>Animal Crossing<#FFFFFF>\" and create a new backup.", false, () => {
 					StartCoroutine(ShowStep4());
-					Controller.Instance.Popup.SetText("Browse to your <#AAAAFF>SD card<#FFFFFF> again and copy the backuped savegame to your PC.", false, () => {
+					Controller.Instance.Popup.SetText("Browse to your <#AAAAFF>SD card<#FFFFFF> again and copy the backuped savegame (all files) to your PC.", false, () => {
 						StartCoroutine(ShowStep5());
 						Controller.Instance.Popup.SetText("Open the <#FF6666>savegame<#FFFFFF> in the <#1fd9b5>ACNH Design Pattern editor<#FFFFFF> and do the changes you desire.", false, () => {
 							StartCoroutine(ShowStep6());
@@ -56,79 +56,79 @@ public class HowToExport : MonoBehaviour
 	{
 		Step1Pop.gameObject.SetActive(true);
 		Step1Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step1Animator.Play("Step1Animation");
 	}
 
 	IEnumerator ShowStep2()
 	{
 		Step1Pop.PopOut();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step1Pop.gameObject.SetActive(false);
 		Step2Pop.gameObject.SetActive(true);
 		Step2Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step2Animator.Play("Step2Animation");
 	}
 
 	IEnumerator ShowStep3()
 	{
 		Step2Pop.PopOut();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step2Pop.gameObject.SetActive(false);
 		Step3Pop.gameObject.SetActive(true);
 		Step3Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step3Animator.Play("Step3Animation");
 	}
 
 	IEnumerator ShowStep4()
 	{
 		Step3Pop.PopOut();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step3Pop.gameObject.SetActive(false);
 		Step4Pop.gameObject.SetActive(true);
 		Step4Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step4Animator.Play("Step4Animation");
 	}
 
 	IEnumerator ShowStep5()
 	{
 		Step4Pop.PopOut();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step4Pop.gameObject.SetActive(false);
 		Step5Pop.gameObject.SetActive(true);
 		Step5Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step5Animator.Play("Step5Animation");
 	}
 
 	IEnumerator ShowStep6()
 	{
 		Step5Pop.PopOut();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step5Pop.gameObject.SetActive(false);
 		Step6Pop.gameObject.SetActive(true);
 		Step6Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step6Animator.Play("Step6Animation");
 	}
 
 	IEnumerator ShowStep7()
 	{
 		Step6Pop.PopOut();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step6Pop.gameObject.SetActive(false);
 		Step7Pop.gameObject.SetActive(true);
 		Step7Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step7Animator.Play("Step7Animation");
 	}
 	IEnumerator Close()
 	{
 		Step7Pop.PopOut();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		Step7Pop.gameObject.SetActive(true);
 		Controller.Instance.SwitchToMainMenu();
 	}

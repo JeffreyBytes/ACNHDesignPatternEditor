@@ -961,7 +961,7 @@ public unsafe class TextureBitmap
 			if (this.Texture != null)
 			{
 				UnregisterTexture(ID);
-				this.Texture.Resize(Width, Height);
+				this.Texture.Reinitialize(Width, Height);
 				this.Texture.Apply();
 				RegisterTexture(ID, Bytes);
 			}

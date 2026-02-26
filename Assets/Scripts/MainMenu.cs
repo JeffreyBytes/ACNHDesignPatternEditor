@@ -1,9 +1,9 @@
-﻿using SFB;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System;
+using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
@@ -64,7 +64,7 @@ public class MainMenu : MonoBehaviour
 		PatreonButton.OnClick = () =>
 		{
 			if (!SavegameLoaded && !SavegameLoading && !DesignsLoaded && !DesignsLoading)
-				Application.OpenURL("https://www.patreon.com/ModAPI");
+				Application.OpenURL("https://www.ko-fi.com/PotatoePet");
 		};
 
 		SavegameBack.OnClick = () =>
@@ -85,15 +85,11 @@ public class MainMenu : MonoBehaviour
 			{
 				if (Controller.Instance.CurrentState == Controller.State.MainMenu)
 				{
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-					var path = StandaloneFileBrowser.OpenFilePanel("Open savegame", "", "dat", false);
-#elif UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-					var path = StandaloneFileBrowser.OpenFilePanel("Open savegame", "", "dat", false);
-#endif
-					if (path.Length > 0)
-					{
-						LoadSavegame(path[0]);
-					}
+                    var path = TinyFileDialogs.OpenFileDialog("Open savegame", "", new List<string>() { "main.dat", "mainHeader.dat" }, "Savegame", false);
+                    if (path != null)
+                    {
+                        LoadSavegame(path);
+                    }
 				}
 			}
 		};
@@ -104,10 +100,10 @@ public class MainMenu : MonoBehaviour
 			{
 				if (Controller.Instance.CurrentState == Controller.State.MainMenu)
 				{
-					var path = StandaloneFileBrowser.OpenFilePanel("Open designs", "", new ExtensionFilter[] { new ExtensionFilter("Designs", new string[] { "designs" }) }, false);
-					if (path != null && path.Length > 0)
+					var path = TinyFileDialogs.OpenFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Design file", false);
+					if (path != null)
 					{
-						LoadDesigns(path[0]);
+						LoadDesigns(path);
 					}
 				}
 			}
@@ -118,14 +114,12 @@ public class MainMenu : MonoBehaviour
 			if (!SavegameLoaded && !SavegameLoading && !DesignsLoaded && !DesignsLoading)
 			{
 				if (Controller.Instance.CurrentState == Controller.State.MainMenu)
-				{
-					string path = StandaloneFileBrowser.SaveFilePanel("Create designs", "", "myDesigns.designs", new ExtensionFilter[] { new ExtensionFilter("Designs", new string[] { "designs" }) });
-					if (path != null && path.Length > 0)
+                {
+                    var path = TinyFileDialogs.SaveFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Design file");
+                    if (path != null)
 					{
-						UnityEngine.Debug.Log(path);
 						if (!path.ToLowerInvariant().EndsWith(".designs"))
 							path = path + ".designs";
-						UnityEngine.Debug.Log(path);
 						LoadDesigns(path);
 					}
 				}
@@ -156,6 +150,7 @@ public class MainMenu : MonoBehaviour
 			}
 			catch (Exception e)
 			{
+				UnityEngine.Debug.LogError(e);
 				SavegameError = e.Message;
 			}
 //			Controller.Instance.CurrentSavegame.Decrypt();
@@ -216,10 +211,10 @@ public class MainMenu : MonoBehaviour
 
 	IEnumerator DoClose()
 	{
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		Controller.Instance.Popup.Close();
 		Controller.Instance.PlayPopoutSound();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 
 		SavegameMenuButtonPop.PopOut();
 		DesignerMenuButtonPop.PopOut();
@@ -233,18 +228,18 @@ public class MainMenu : MonoBehaviour
 
 	public IEnumerator ShowLoading()
 	{
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		Controller.Instance.Popup.Close();
 		Controller.Instance.PlayPopoutSound();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		SavegameBackPop.PopOut();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		HowToPop.PopOut();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		SelectSavegamePop.PopOut();
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		Controller.Instance.Popup.SetText("<align=\"center\">Loading <#FF6666>savegame<#FFFFFF><s1>...<s10>\r\n\r\nPlease wait.", true);
-		yield return new WaitForSeconds(3f);
+		yield return new WaitForSeconds(3f * Settings.AnimationMultiplier);
 		while (SavegameLoading && !SavegameLoaded)
 		{
 			if (SavegameError != null)
@@ -263,7 +258,7 @@ public class MainMenu : MonoBehaviour
 		{
 			//Controller.Instance.CurrentSavegame.GenerateDesignImages();
 			Controller.Instance.Popup.Close();
-			yield return new WaitForSeconds(0.3f);
+			yield return new WaitForSeconds(0.3f * Settings.AnimationMultiplier);
 			Controller.Instance.SwitchToPatternMenu();
 		}
 	}
@@ -271,18 +266,18 @@ public class MainMenu : MonoBehaviour
 
 	public IEnumerator ShowDesignerLoading()
 	{
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		Controller.Instance.Popup.Close();
 		Controller.Instance.PlayPopoutSound();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		CreateDesignsPop.PopOut();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		SelectDesignsPop.PopOut();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		DesignerBackPop.PopOut();
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		Controller.Instance.Popup.SetText("<align=\"center\">Loading <#FF6666>designs<#FFFFFF><s1>...<s10>\r\n\r\nPlease wait.", true);
-		yield return new WaitForSeconds(3f);
+		yield return new WaitForSeconds(3f * Settings.AnimationMultiplier);
 		while (DesignsLoading && !DesignsLoaded)
 		{
 			if (DesignsError != null)
@@ -301,7 +296,7 @@ public class MainMenu : MonoBehaviour
 		{
 			//Controller.Instance.CurrentSavegame.GenerateDesignImages();
 			Controller.Instance.Popup.Close();
-			yield return new WaitForSeconds(0.3f);
+			yield return new WaitForSeconds(0.3f * Settings.AnimationMultiplier);
 			Controller.Instance.SwitchToPatternMenu();
 		}
 	}
@@ -315,16 +310,16 @@ public class MainMenu : MonoBehaviour
 		HowToPop.PopOut();
 		SavegameBackPop.PopOut();
 
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		DesignerMenu.SetActive(false);
 		SavegameMenu.SetActive(false);
 		Main.SetActive(true);
 		SavegameMenuButtonPop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		DesignerMenuButtonPop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		PatreonButtonPop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		if (!Controller.Instance.Popup.IsOpened)
 			Controller.Instance.Popup.SetText("<align=\"center\">Welcome to the\r\n<#1fd9b5>ACNH: Design Pattern Editor<#FFFFFF>.\r\nPlease select an option.");
 	}
@@ -335,14 +330,14 @@ public class MainMenu : MonoBehaviour
 		DesignerMenuButtonPop.PopOut();
 		PatreonButtonPop.PopOut();
 
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		DesignerMenu.SetActive(false);
 		SavegameMenu.SetActive(true);
 		Main.SetActive(false);
 		SelectSavegamePop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		HowToPop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		SavegameBackPop.PopUp();
 	}
 
@@ -352,14 +347,14 @@ public class MainMenu : MonoBehaviour
 		DesignerMenuButtonPop.PopOut();
 		PatreonButtonPop.PopOut();
 
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		DesignerMenu.SetActive(true);
 		SavegameMenu.SetActive(false);
 		Main.SetActive(false);
 		CreateDesignsPop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		SelectDesignsPop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		DesignerBackPop.PopUp();
 	}
 }

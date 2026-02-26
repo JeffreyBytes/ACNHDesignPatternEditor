@@ -62,7 +62,9 @@ public class PatternSelectorPattern : MonoBehaviour, IPointerEnterHandler, IPoin
 		}
 		if (pattern == null)
 			Logger.Log(Logger.Level.ERROR, "Pattern is null!");
-		this.Pattern = pattern;
+        
+		pattern.IsSet = true;
+        this.Pattern = pattern;
 		this.Name = pattern.Name;
 		if (TooltipHandler == null)
 			TooltipHandler = GetComponent<TooltipHandler>();

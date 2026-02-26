@@ -1,6 +1,6 @@
-﻿using SFB;
+﻿using System.Collections.Generic;
 
-public class ExportOperation : IOperation, IPatternOperation
+public class ExportOperation : IOperation
 {
 	private DesignPattern Pattern;
 	private bool _IsFinished = false;
@@ -36,8 +36,8 @@ public class ExportOperation : IOperation, IPatternOperation
 				bitmap.SetPixel(x, y, new TextureBitmap.Color((byte) (colors[x + y * Pattern.Width].a * 255f), (byte) (colors[x + y * Pattern.Width].r * 255f), (byte) (colors[x + y * Pattern.Width].g * 255f), (byte) (colors[x + y * Pattern.Width].b * 255f)));
 			}
 		}
-		var path = StandaloneFileBrowser.SaveFilePanel("Export image", "", "image.png", new ExtensionFilter[] { new ExtensionFilter("Image", new string[] { "png", "jpg", "jpeg", "bmp", "gif" }) });
-		if (path != null && path.Length > 0)
+        var path = TinyFileDialogs.SaveFileDialog("Export image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif" }, "Image");
+		if (path != null)
 		{
 			bitmap.Save(path);
 			_IsFinished = true;

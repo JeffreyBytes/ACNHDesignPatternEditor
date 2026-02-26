@@ -55,7 +55,7 @@ public class NameInput : MonoBehaviour
 		Confirm = confirm;
 		Cancel = cancel;
 		Animator.SetTrigger("TransitionIn");
-		if (Controller.Instance.CurrentOperation is IPatternOperation patternOperation)
+		if (Controller.Instance.CurrentOperation is ISelectSecondPatternOperation patternOperation)
 		{
 			InputField.text = patternOperation.GetPattern().Name;
 		}

@@ -18,8 +18,10 @@ public class Controller : MonoBehaviour
 	public RectTransform RectTransform;
 	public Tooltip Tooltip;
 	public ConfirmationPopup ConfirmationPopup;
-	public FormatPopup FormatPopup;
-	public AudioClip HoverSound;
+    public FormatPopup FormatPopup;
+	public MenuButton SettingsButton;
+    public SettingsPopup SettingsPopup;
+    public AudioClip HoverSound;
 	public AudioClip ClickSound;
 	public AudioClip PopupSound;
 	public AudioClip PopoutSound;
@@ -107,7 +109,7 @@ public class Controller : MonoBehaviour
 
 	void OnEnable()
 	{
-		Application.targetFrameRate = 60;
+		Application.targetFrameRate = Settings.RefreshsRate;
 		TooltipTransform = Tooltip.GetComponent<RectTransform>();
 		RectTransform = GetComponent<RectTransform>();
 		Instance = this;
@@ -191,6 +193,9 @@ public class Controller : MonoBehaviour
 			PatternSelector.gameObject.SetActive(false);
 			Importer.gameObject.SetActive(false);
 			MainMenu.Open();
+			SettingsButton.OnClick = () => {
+				SettingsPopup.Show();
+			};
 			for (int i = 0; i < AudioSources.Length; i++)
 			{
 				AudioSources[i] = gameObject.AddComponent<AudioSource>();
@@ -244,7 +249,7 @@ public class Controller : MonoBehaviour
 		{
 			Logger.Log(Logger.Level.ERROR, "[Controller] Error while saving: " + e.ToString());
 		}
-		yield return new WaitForSeconds(0.5f);
+		yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		try
 		{
 			Controller.Instance.Popup.SetText("<align=\"center\">Saving <#FF6666>savegame<#FFFFFF><s1>...<s10>\r\n\r\nPlease wait.", true);
@@ -253,7 +258,7 @@ public class Controller : MonoBehaviour
 		{
 			Logger.Log(Logger.Level.ERROR, "[Controller] Error while saving: " + e.ToString());
 		}
-		yield return new WaitForSeconds(3f);
+		yield return new WaitForSeconds(3f * Settings.AnimationMultiplier);
 		while (SavegameSaving && !SavegameSaved)
 		{
 			yield return new WaitForEndOfFrame();
@@ -267,7 +272,7 @@ public class Controller : MonoBehaviour
 		{
 			Logger.Log(Logger.Level.ERROR, "[Controller] Error while saving: " + e.ToString());
 		}
-		yield return new WaitForSeconds(0.3f);
+		yield return new WaitForSeconds(0.3f * Settings.AnimationMultiplier);
 		try
 		{
 			Controller.Instance.SwitchToMainMenu();
@@ -282,19 +287,39 @@ public class Controller : MonoBehaviour
 	{
 		CurrentOperation = operation;
 		CurrentOperation.Start();
-	}
+		if (CurrentOperation is ISelectPatternOperation selectPatternOperation)
+		{
+			if (CurrentState == State.PatternExchange)
+			{
+				SwitchToPatternMenu();
+			}
+		}
+		else if (CurrentOperation is IMultiplePatternSelectorOperation multiSelect)
+		{
+            PatternSelector.ActionMenu.ShowActions(new List<(string, System.Action)>()
+            {
+                (multiSelect.GetConfirmName(), (System.Action) (() => {
+					multiSelect.Execute();
+                })),
+                ("Cancel", (System.Action) (() => {
+                    CurrentOperation.Abort();
+                })),
+            }.ToArray());
+        }
+    }
 
 	IEnumerator PlayTransitionIn()
 	{
 		try
 		{
-			TransitionAnimator.SetTrigger("PlayTransitionIn");
+			TransitionAnimator.speed = (1f / Settings.AnimationMultiplier);
+            TransitionAnimator.SetTrigger("PlayTransitionIn");
 		}
 		catch (System.Exception e)
 		{
 			Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to cloth selector: " + e.ToString());
 		}
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		try
 		{
 			PlaySound(AppOpenSound, 0f);
@@ -303,7 +328,7 @@ public class Controller : MonoBehaviour
 		{
 			Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to cloth selector: " + e.ToString());
 		}
-		yield return new WaitForSeconds(0.3f);
+		yield return new WaitForSeconds(0.3f * Settings.AnimationMultiplier);
 	}
 
 	public void SwitchToImporter(TextureBitmap bitmap, (int, int, int, int) rect, (int, int) resultSize, System.Action<TextureBitmap> confirm, System.Action cancel)
@@ -324,7 +349,7 @@ public class Controller : MonoBehaviour
 			{
 				Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to importer: " + e.ToString());
 			}
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		}
 		try
 		{
@@ -357,17 +382,18 @@ public class Controller : MonoBehaviour
 			{
 				Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to pattern editor: " + e.ToString());
 			}
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		}
 		try
-		{
-			TransitionAnimator.SetTrigger("PlayTransitionIn");
+        {
+            TransitionAnimator.speed = (1f / Settings.AnimationMultiplier);
+            TransitionAnimator.SetTrigger("PlayTransitionIn");
 		}
 		catch (System.Exception e)
 		{
 			Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to pattern editor: " + e.ToString());
 		}
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		try
 		{
 			PlaySound(AppOpenSound, 0f);
@@ -376,7 +402,7 @@ public class Controller : MonoBehaviour
 		{
 			Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to pattern editor: " + e.ToString());
 		}
-		yield return new WaitForSeconds(0.3f);
+		yield return new WaitForSeconds(0.3f * Settings.AnimationMultiplier);
 		try
 		{
 			if (CurrentState == State.ClothSelector)
@@ -411,7 +437,7 @@ public class Controller : MonoBehaviour
 			{
 				Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to cloth selector: " + e.ToString());
 			}
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 		}
 		yield return StartCoroutine(PlayTransitionIn());
 		
@@ -442,7 +468,7 @@ public class Controller : MonoBehaviour
 			CurrentState = State.None;
 			try { PatternEditor.Hide(); }
 			catch (System.Exception e) { Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to name input: " + e.ToString()); }
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		}
 	}
 
@@ -453,7 +479,7 @@ public class Controller : MonoBehaviour
 			CurrentState = State.None;
 			try { Importer.Hide(); }
 			catch (System.Exception e) { Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to name input: " + e.ToString()); }
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		}
 	}
 
@@ -486,44 +512,53 @@ public class Controller : MonoBehaviour
 
 	IEnumerator ConnectToServer()
 	{
-		CurrentState = State.None;
-		//CurrentClient = new DesignServer.Client(new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), 9801));
-		var ipAddresses = Dns.GetHostAddresses("designs.potatoepet.de");
-		if (ipAddresses.Length == 0)
-			throw new System.Exception("Couldn't resolve designs.potatoepet.de");
-        CurrentClient = new DesignServer.Client(new System.Net.IPEndPoint(ipAddresses[0], 9801));
-		int i = 1;
-		float time = 0f;
-		OnlineTransitionAnimator.SetTrigger("PlayTransitionIn");
-		while (!CurrentClient.IsConnected)
+		if (CurrentClient == null || !CurrentClient.IsConnected)
 		{
-			if (CurrentClient.Error != null)
+			CurrentState = State.None;
+			//CurrentClient = new DesignServer.Client(new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), 9801));
+			var ipAddresses = Dns.GetHostAddresses("designs.potatoepet.de");
+			if (ipAddresses.Length == 0)
+				throw new System.Exception("Couldn't resolve designs.potatoepet.de");
+			CurrentClient = new DesignServer.Client(new System.Net.IPEndPoint(ipAddresses[0], 9801));
+			int i = 1;
+			float time = 0f;
+			OnlineTransitionAnimator.SetTrigger("PlayTransitionIn");
+			while (!CurrentClient.IsConnected)
 			{
-				OnlineTransitionLabel.text = CurrentClient.Error;
-				CurrentClient = null;
-				yield return new WaitForSeconds(2f);
+				if (CurrentClient.Error != null)
+				{
+					OnlineTransitionLabel.text = CurrentClient.Error;
+					CurrentClient = null;
+					yield return new WaitForSeconds(2f * Settings.AnimationMultiplier);
 
-				PatternSelector.gameObject.SetActive(true);
-				OnlineTransitionAnimator.SetTrigger("PlayTransitionOut");
+					PatternSelector.gameObject.SetActive(true);
+					OnlineTransitionAnimator.speed = 1f / Settings.AnimationMultiplier;
+					OnlineTransitionAnimator.SetTrigger("PlayTransitionOut");
 
-				break;
+					break;
+				}
+				string label = "Connecting" + new string('.', i);
+				OnlineTransitionLabel.text = label;
+				i++;
+				if (i > 3) i = 1;
+				yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
+				time += 0.2f;
 			}
-			string label = "Connecting" + new string('.', i);
-			OnlineTransitionLabel.text = label;
-			i++;
-			if (i > 3) i = 1;
-			yield return new WaitForSeconds(0.2f);
-			time += 0.2f;
-		}
-		if (CurrentClient != null)
-			OnlineTransitionLabel.text = "Connected!";
-		var left = 1.5f - time;
-		if (left > 0f)
-			yield return new WaitForSeconds(left);
+			if (CurrentClient != null)
+				OnlineTransitionLabel.text = "Connected!";
+			var left = 1.5f - time;
+			if (left > 0f)
+				yield return new WaitForSeconds(left);
 
-		ClothSelector.gameObject.SetActive(false);
-		PatternSelector.gameObject.SetActive(false);
-		OnlineTransitionAnimator.SetTrigger("PlayTransitionOut");
+			ClothSelector.gameObject.SetActive(false);
+			PatternSelector.gameObject.SetActive(false);
+			OnlineTransitionAnimator.SetTrigger("PlayTransitionOut");
+		}
+		else
+		{
+            ClothSelector.gameObject.SetActive(false);
+            PatternSelector.gameObject.SetActive(false);
+        }
 	}
 
 	IEnumerator HideUploadPattern()
@@ -531,7 +566,7 @@ public class Controller : MonoBehaviour
 		if (CurrentState == State.UploadPattern)
 		{
 			UploadPattern.Hide();
-			yield return new WaitForSeconds(0.2f);
+			yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 			UploadPattern.gameObject.SetActive(false);
 			CurrentState = State.None;
 		}
@@ -554,7 +589,7 @@ public class Controller : MonoBehaviour
 		if (CurrentClient == null) { cancel?.Invoke(); }
 		else
 		{
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
 			try
 			{
 				CurrentState = State.UploadPattern;
@@ -602,32 +637,35 @@ public class Controller : MonoBehaviour
 	}
 
 
-	public void SwitchToPatternExchange(bool proDesigns, System.Action<DesignServer.Pattern> confirm, System.Action cancel)
+	public void SwitchToPatternExchange(bool pro = false)
 	{
-		StartCoroutine(ShowPatternExchange(proDesigns, confirm, cancel));
+		StartCoroutine(ShowPatternExchange(pro));
 	}
 
-	IEnumerator ShowPatternExchange(bool proDesigns, System.Action<DesignServer.Pattern> confirm, System.Action cancel)
+	IEnumerator ShowPatternExchange(bool pro = false)
 	{
 		Logger.Log(Logger.Level.INFO, "[Controller] Switching to pattern exchange...");
 
 		yield return StartCoroutine(ConnectToServer());
 		if (CurrentClient == null)
-		{
-			cancel?.Invoke();
-		}
+        {
+            Controller.Instance.SwitchToPatternMenu();
+        }
 		else
 		{
 			try
 			{
-				CurrentState = State.PatternExchange;
+                PatternSelector.ActionMenu.Close();
+                CurrentState = State.PatternExchange;
 				ClothSelector.gameObject.SetActive(false);
 				PatternSelector.gameObject.SetActive(false);
 				PatternExchange.gameObject.SetActive(false);
 				HideTooltip();
 				PatternExchange.gameObject.SetActive(true);
 				PatternExchange.Client = CurrentClient;
-				PatternExchange.ShowItems(proDesigns, confirm, cancel);
+				PatternExchange.Open();
+				PatternExchange.SwitchType(pro, true);
+				
 			}
 			catch (System.Exception e)
 			{
@@ -644,7 +682,7 @@ public class Controller : MonoBehaviour
 	IEnumerator ShowPatternSelector()
 	{
 		Logger.Log(Logger.Level.INFO, "[Controller] Switching to pattern selector...");
-		if (CurrentClient != null)
+		if (CurrentClient != null && (CurrentOperation == null || !(CurrentOperation is IBackToPatternExchangeOperation)))
 		{
 			CurrentClient.Close();
 			CurrentClient = null;
@@ -679,30 +717,31 @@ public class Controller : MonoBehaviour
 				{
 					Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to pattern selector: " + e.ToString());
 				}
-				yield return new WaitForSeconds(1.5f);
+				yield return new WaitForSeconds(1.5f * Settings.AnimationMultiplier);
 			}
 			if (CurrentState == State.NameInput)
 			{
 				try
 				{
-					NameInput.Hide(); 
+					NameInput.Hide();
 				}
 				catch (System.Exception e)
 				{
 					Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to pattern selector: " + e.ToString());
 				}
-				yield return new WaitForSeconds(0.2f);
+				yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 			}
 			try
 			{
 				CurrentState = State.PatternSelection;
+				TransitionAnimator.speed = (1f / Settings.AnimationMultiplier);
 				TransitionAnimator.SetTrigger("PlayTransitionOut");
 			}
 			catch (System.Exception e)
 			{
 				Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to pattern selector: " + e.ToString());
 			}
-			yield return new WaitForSeconds(0.25f);
+			yield return new WaitForSeconds(0.25f * Settings.AnimationMultiplier);
 			try
 			{
 				NameInput.gameObject.SetActive(false);
@@ -714,6 +753,17 @@ public class Controller : MonoBehaviour
 				PatternEditor.gameObject.SetActive(false);
 				PatternSelector.gameObject.SetActive(true);
 				PatternSelector.Open();
+				if (CurrentOperation is ISelectPatternOperation selectOperation)
+				{
+					if (selectOperation.IsPro())
+						PatternSelector.SwitchToProDesigns(true);
+					else
+						PatternSelector.SwitchToDesigns(true);
+				}
+				else
+				{
+					PatternSelector.ReleaseLock();
+				}
 			}
 			catch (System.Exception e)
 			{
@@ -759,9 +809,9 @@ public class Controller : MonoBehaviour
 			{
 				Logger.Log(Logger.Level.ERROR, "[Controller] Error while switching to main menu: " + e.ToString());
 			}
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(1f * Settings.AnimationMultiplier);
 		}
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(1f * Settings.AnimationMultiplier);
 		try
 		{
 			Tutorial.gameObject.SetActive(true);
@@ -780,9 +830,22 @@ public class Controller : MonoBehaviour
 		{
 			if (CurrentOperation != null && CurrentOperation.IsFinished())
 			{
-				if (CurrentState != State.PatternSelection)
-					SwitchToPatternMenu();
-				CurrentOperation = null;
+				if (CurrentOperation is IBackToPatternExchangeOperation back)
+				{
+					SwitchToPatternExchange(back.IsPro());
+				}
+				else
+				{
+					if (CurrentState != State.PatternSelection)
+						SwitchToPatternMenu();
+					if (CurrentOperation is IMultiplePatternSelectorOperation)
+					{
+						PatternSelector.ActionMenu.Close();
+						PatternSelector.UnhighlightAll();
+					}
+				}
+
+                CurrentOperation = null;
 			}
 		}
 		catch (System.Exception e)

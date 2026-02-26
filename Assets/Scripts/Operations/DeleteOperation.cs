@@ -1,4 +1,4 @@
-﻿public class DeleteOperation : IOperation, IPatternOperation
+﻿public class DeleteOperation : IOperation
 {
 	private DesignPattern Pattern;
 	private bool _IsFinished = false;

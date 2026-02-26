@@ -1,4 +1,4 @@
-﻿public class CloneOperation : IOperation, IPatternOperation, IPatternSelectorOperation
+﻿public class CloneOperation : IOperation, ISelectSecondPatternOperation
 {
 	private DesignPattern Pattern;
 	private bool _IsFinished = false;

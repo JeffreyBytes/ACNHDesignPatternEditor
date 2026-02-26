@@ -12,34 +12,45 @@ public unsafe class SimpleDesignPattern : DesignPattern
 	private DesignPattern.Color[] _Palette;
 	private byte[] _Image;
 	private byte _Type;
+    public Usage _UsageFlag;
 
-	public override int Width => 32;
+    public override int Width => 32;
 	public override int Height => 32;
 	public override string Name { get => _Name; set => _Name = value; }
 	public override DesignPattern.TypeEnum Type { get => (DesignPattern.TypeEnum) _Type; set => _Type = (byte) value; }
 	public override DesignPattern.Color[] Palette { get => _Palette; set => _Palette = value; }
 	public override byte[] Image { get => _Image; set => _Image = value; }
+    public override Usage UsageFlag { get => _UsageFlag; set => _UsageFlag = value; }
 
-	public void Write(BinaryData data, int offset)
+    public const int NameOffset = 0x10;
+    public const int UsageOffset = 0x30;
+    public const int PersonalIDOffset = 0x38;
+    public const int PaletteOffset = 0x78;
+    public const int ImageOffset = 0xA5;
+    public const int TypeOffset = 0x2A5;
+
+    public void Write(BinaryData data, int offset)
 	{
-		data.WriteString(offset + 0x10, this._Name, 20);
-		_PersonalID.Write(data, offset + 0x38);
+		data.WriteString(offset + NameOffset, this._Name, 20);
+		data.WriteU16(offset + UsageOffset, (ushort) UsageFlag);
+		_PersonalID.Write(data, offset + PersonalIDOffset);
 		for (int i = 0; i < _Palette.Length; i++)
-			_Palette[i].Write(data, offset + 0x78 + 0x03 * i);
-		data.WriteBytes(offset + 0xA5, this._Image);
-		data.WriteU8(offset + 0x2A5, this._Type);
+			_Palette[i].Write(data, offset + PaletteOffset + 0x03 * i);
+		data.WriteBytes(offset + ImageOffset, this._Image);
+		data.WriteU8(offset + TypeOffset, this._Type);
 	}
 
 	public static SimpleDesignPattern Read(BinaryData data, int offset)
 	{
 		var ret = new SimpleDesignPattern();
-		ret._Name = data.ReadString(offset + 0x10, 20);
-		ret._PersonalID = PersonalID.Read(data, offset + 0x38);
+		ret._Name = data.ReadString(offset + NameOffset, 20);
+		ret._UsageFlag = (Usage) data.ReadU16(offset + UsageOffset);
+		ret._PersonalID = PersonalID.Read(data, offset + PersonalIDOffset);
 		ret._Palette = new DesignPattern.Color[15];
 		for (int i = 0; i < ret._Palette.Length; i++)
-			ret._Palette[i] = DesignPattern.Color.Read(data, offset + 0x78 + 0x03 * i);
-		ret._Image = data.ReadBytes(offset + 0xA5, 0x200);
-		ret._Type = data.ReadU8(offset + 0x2A5);
+			ret._Palette[i] = DesignPattern.Color.Read(data, offset + PaletteOffset + 0x03 * i);
+		ret._Image = data.ReadBytes(offset + ImageOffset, 0x200);
+		ret._Type = data.ReadU8(offset + TypeOffset);
 		return ret;
 	}
 

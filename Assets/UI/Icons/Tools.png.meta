@@ -117,7 +117,7 @@ TextureImporter:
       213: -1331832645278915656
     second: Tools_20
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 1
@@ -134,9 +134,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -147,10 +150,10 @@ TextureImporter:
     serializedVersion: 2
     filterMode: 2
     aniso: 0
-    mipBias: -100
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -168,10 +171,15 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
   applyGammaDecoding: 1
+  swizzle: 50462976
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -183,6 +191,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -195,6 +204,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 1
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
@@ -651,9 +661,30 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-  spritePackingTag: Icons
+    nameFileIdTable:
+      Tools_0: 2860006914309871096
+      Tools_1: -2376758258213490438
+      Tools_10: -9191924470218883087
+      Tools_11: -7669099814004915387
+      Tools_12: -8188083361976690054
+      Tools_13: -1057921988299516155
+      Tools_14: 1609462941788001184
+      Tools_15: 1599664627685864503
+      Tools_16: 8485792352828908058
+      Tools_17: 5364584501320811629
+      Tools_18: 8572495075955807124
+      Tools_19: 3619422796940490707
+      Tools_2: 6232742816020895870
+      Tools_20: -1331832645278915656
+      Tools_3: -3569232777630780389
+      Tools_4: 3379066624450153177
+      Tools_5: 1666225654822289539
+      Tools_6: -855942343913074080
+      Tools_7: 4858919519181452133
+      Tools_8: -2318285518543234687
+      Tools_9: 6451205499376113164
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

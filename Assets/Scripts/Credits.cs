@@ -11,6 +11,8 @@ public class Credits : MonoBehaviour
     public CanvasGroup ShineGroup;
     public RectTransform Container;
     public RectTransform CreditsContainer;
+    public MenuButton CloseButton;
+    public Pop ClosePop;
 
     private float ShowPhase = 0f;
     private bool IsShowing = false;
@@ -22,6 +24,9 @@ public class Credits : MonoBehaviour
     void Start()
     {
         gameObject.SetActive(false);
+        CloseButton.OnClick = () => {
+            Hide();
+        };
     }
 
     public void Show()
@@ -38,6 +43,12 @@ public class Credits : MonoBehaviour
             FinishedShowing = false;
             IsShowing = true;
         }
+    }
+
+    public void Hide()
+    {
+        ClosePop.PopOut();
+        IsShowing = false;
     }
 
     private void Update()
@@ -79,8 +90,9 @@ public class Credits : MonoBehaviour
             });
         }
         if (!IsShowing && ShowPhase <= 0f)
+        {
             gameObject.SetActive(false);
-
+        }
     }
     IEnumerator PlayCredits()
     {
@@ -89,6 +101,7 @@ public class Credits : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
         Music.Play();
+        ClosePop.PopUp();
 
         yield return new WaitForSeconds(8f);
         KK.StartGuitar();
@@ -150,6 +163,6 @@ public class Credits : MonoBehaviour
         yield return new WaitForSeconds(0.25f); // 156.5
         KK.StopGuitar();
         yield return new WaitForSeconds(8f);
-        IsShowing = false;
+        Hide();
     }
 }

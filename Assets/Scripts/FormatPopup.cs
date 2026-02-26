@@ -107,7 +107,7 @@ public class FormatPopup : MonoBehaviour
 	IEnumerator Open()
 	{
 		PopupPop.PopUp();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 
 		CancelPop.PopUp();
 	}
@@ -115,9 +115,9 @@ public class FormatPopup : MonoBehaviour
 	IEnumerator Close()
 	{
 		CancelPop.PopOut();
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 		PopupPop.PopOut();
-		yield return new WaitForSeconds(0.4f);
+		yield return new WaitForSeconds(0.4f * Settings.AnimationMultiplier);
 		gameObject.SetActive(false);
 	}
 
@@ -125,9 +125,9 @@ public class FormatPopup : MonoBehaviour
 	void Update()
 	{
 		if (IsOpen && OpenPhase < 1f)
-			OpenPhase = Mathf.Min(1f, OpenPhase + Time.deltaTime * 2f);
+			OpenPhase = Mathf.Min(1f, OpenPhase + Time.deltaTime * 2f * (1f / Settings.AnimationMultiplier));
 		if (!IsOpen && OpenPhase > 0f)
-			OpenPhase = Mathf.Max(0f, OpenPhase - Time.deltaTime * 2f);
+			OpenPhase = Mathf.Max(0f, OpenPhase - Time.deltaTime * 2f * (1f / Settings.AnimationMultiplier));
 		BackgroundCanvasGroup.alpha = OpenPhase;
 	}
 }

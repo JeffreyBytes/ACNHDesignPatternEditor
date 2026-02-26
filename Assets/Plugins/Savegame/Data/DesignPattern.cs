@@ -12,9 +12,20 @@ public abstract class DesignPattern
 	public abstract byte[] Image { get; set; }
 	public abstract int Width { get; }
 	public abstract int Height { get; }
+	public abstract Usage UsageFlag { get; set; }
 	public int Index { get; set; }
 
-	public void ChangeOwnership(PersonalID personalID)
+    public enum Usage : ushort
+    {
+        Opaque = 0xEE00,
+        ProDesign = 0xEE01,
+        Transparent = 0xEE02,
+        Unused = 0xEE05
+    }
+
+	public bool IsSet { get; set; }
+
+    public void ChangeOwnership(PersonalID personalID)
 	{
 		var newPersonalID = new PersonalID();
 		newPersonalID.Name = personalID.Name;

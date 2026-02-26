@@ -1,4 +1,4 @@
-﻿public class SwapOperation : IOperation, IPatternOperation, IPatternSelectorOperation
+﻿public class SwapOperation : IOperation, ISelectSecondPatternOperation
 {
 	private DesignPattern Pattern;
 	private bool _IsFinished = false;

@@ -19,6 +19,26 @@ public class MenuButton : MonoBehaviour
 	public ClickDelegate OnClick;
 	private Color BaseColor;
 	private Color HoverColor;
+	private bool _IsSelected;
+	public bool IsSelected
+	{
+		get
+		{
+			return _IsSelected;
+		}
+		set
+		{
+            _IsSelected = value;
+			if (Background != null)
+			{
+				if (_IsSelected)
+					Background.color = new Color(56f / 256f, 183f / 256f, 159f / 256f);
+				else
+					Background.color = new Color(31f / 256f, 217f / 256f, 181f / 256f);
+			}
+
+        }
+	}
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -26,7 +46,8 @@ public class MenuButton : MonoBehaviour
 		Events = GetComponent<EventTrigger>();
 		Hover = transform.Find("Hover").gameObject;
 		Strips = Hover.transform.Find("Strips").GetComponent<RectTransform>();
-		Background = transform.Find("Background").GetComponent<Image>();
+		if (Background == null)
+			Background = transform.Find("Background").GetComponent<Image>();
 		Hover.SetActive(false);
 
 		var mouseOver = new EventTrigger.Entry();
@@ -55,7 +76,8 @@ public class MenuButton : MonoBehaviour
 		Color.RGBToHSV(BaseColor, out h, out s, out v);
 		v += 0.1f;
 		HoverColor = Color.HSVToRGB(h, s, v);
-	}
+        Background.color = _IsSelected ? new Color(56f / 256f, 183f / 256f, 159f / 256f) : BaseColor;
+    }
 
 	private void Click()
 	{
@@ -79,13 +101,14 @@ public class MenuButton : MonoBehaviour
 		Strips.anchoredPosition = new Vector2(-60 + 60 * StripsPhase, 0f);
 		if (IsMouseOver)
 		{
-			Background.color = HoverColor; // new Color(90f / 255f, 240f / 255f, 212f / 255f);
+			Background.color = _IsSelected ? new Color(56f / 256f, 183f / 256f, 159f / 256f) : HoverColor; // new Color(90f / 255f, 240f / 255f, 212f / 255f);
 			Hover.SetActive(true);
 		}
 		else
 		{
-			Background.color = BaseColor;// new Color(31f / 255f, 217f / 255f, 181f / 255f);
+			Background.color = _IsSelected ? new Color(56f / 256f, 183f / 256f, 159f / 256f) : BaseColor;// new Color(31f / 255f, 217f / 255f, 181f / 255f);
 			Hover.SetActive(false);
 		}
-	}
+
+    }
 }

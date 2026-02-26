@@ -1,4 +1,7 @@
-﻿public interface IOperation
+﻿using System.Collections;
+using System.Collections.Generic;
+
+public interface IOperation
 {
 	void Start();
 	bool IsFinished();
@@ -10,12 +13,27 @@ public interface IChangeNameOperation
 	void SetName(string name);
 }
 
-public interface IPatternOperation
+public interface ISelectPatternOperation
 {
-	DesignPattern GetPattern();
+    bool IsPro();
+    void SelectPattern(DesignPattern pattern);
+}
+public interface ISelectSecondPatternOperation
+{
+    DesignPattern GetPattern();
+    void SelectPattern(DesignPattern pattern);
 }
 
-public interface IPatternSelectorOperation
+public interface IMultiplePatternSelectorOperation
 {
-	void SelectPattern(DesignPattern pattern);
+    void Execute();
+    string GetConfirmName();
+    List<DesignPattern> GetPatterns();
+    void SelectPattern(DesignPattern pattern);
+    void UnselectPattern(DesignPattern pattern);
+}
+
+public interface IBackToPatternExchangeOperation
+{
+    bool IsPro();
 }

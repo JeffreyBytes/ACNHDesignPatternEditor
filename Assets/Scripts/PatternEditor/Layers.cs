@@ -1,9 +1,4 @@
-﻿using SFB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -135,8 +130,9 @@ public class Layers : MonoBehaviour
 
 	private void ImportImage()
 	{
-		Controller.Instance.Popup.SetText("Please select any <#FF6666>Image<#FFFFFF> file to import.", false, () => {
-			var path = StandaloneFileBrowser.OpenFilePanel("Import image", "", new ExtensionFilter[] { new ExtensionFilter("Image", new string[] { "png", "jpg", "jpeg", "bmp", "gif" }) }, false);
+			Controller.Instance.Popup.SetText("Please select any <#FF6666>Image<#FFFFFF> file to import.", false, () => {
+
+            var path = TinyFileDialogs.OpenFileDialog("Import image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp" }, "Image", false);
 			if (path.Length > 0)
 			{
 				try
@@ -145,8 +141,8 @@ public class Layers : MonoBehaviour
 					int y = 0;
 					int width = Editor.CurrentPattern.CurrentSubPattern.Width;
 					int height = Editor.CurrentPattern.CurrentSubPattern.Height;
-					var bmp = TextureBitmap.Load(path[0]);
-					var newLayer = new SmartObjectLayer(Editor.CurrentPattern.CurrentSubPattern, System.IO.Path.GetFileNameWithoutExtension(path[0]), bmp, x, y, width, height);
+					var bmp = TextureBitmap.Load(path);
+					var newLayer = new SmartObjectLayer(Editor.CurrentPattern.CurrentSubPattern, System.IO.Path.GetFileNameWithoutExtension(path), bmp, x, y, width, height);
 					newLayer.UpdateColors();
 					var index = Editor.CurrentPattern.CurrentSubPattern.Layers.IndexOf(Editor.CurrentPattern.CurrentSubPattern.SelectedLayer) + 1;
 					Editor.CurrentPattern.CurrentSubPattern.Layers.Insert(index, newLayer);

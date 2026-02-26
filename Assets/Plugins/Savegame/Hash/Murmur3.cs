@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 public static class Murmur3
 {
@@ -7,6 +8,48 @@ public static class Murmur3
         k = (k * 0x16A88000) | ((k * 0xCC9E2D51) >> 17);
         k *= 0x1B873593;
         return k;
+    }
+
+    /// <summary>
+    /// Finds a hash region which fits the hash at the beginning of the data
+    /// </summary>
+    /// <param name="data">The data to search in</param>
+    /// <param name="offset">The offset, starting at the hash</param>
+    /// <param name="minSize">Min size to look for</param>
+    /// <param name="maxSize">Max size to look for</param>
+    /// <param name="seed">Seed</param>
+    /// <returns></returns>
+    public static uint FindBlock(in byte[] data, int offset, uint minSize, uint maxSize, uint seed = 0)
+    {
+        UnityEngine.Debug.Log("Offset: " + offset.ToString("X8"));
+        uint originalHash = BitConverter.ToUInt32(data, offset);
+        uint checksum = seed;
+        offset += 4;
+        var end = data.Length - offset;
+        if (maxSize > end) maxSize = (uint) end;
+        for (var i = 0; i < end / 4; i++)
+        {
+            var iOffset = i * 4;
+            var val = BitConverter.ToUInt32(data, offset + iOffset);
+            checksum ^= Murmur32_Scramble(val);
+            checksum = (checksum >> 19) | (checksum << 13);
+            checksum = checksum * 5 + 0xE6546B64;
+            if (iOffset >= minSize)
+            {
+                var tempHash = checksum;
+                tempHash ^= (uint) (iOffset + 4);
+                tempHash ^= tempHash >> 16;
+                tempHash *= 0x85EBCA6B;
+                tempHash ^= tempHash >> 13;
+                tempHash *= 0xC2B2AE35;
+                tempHash ^= tempHash >> 16;
+                if (tempHash == originalHash)
+                {
+                    return (uint) (i * 4 + 4);
+                }
+            }
+        }
+        return 0;
     }
 
     public static uint GetMurmur3Hash(in byte[] data, int offset, uint size, uint seed = 0)

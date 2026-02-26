@@ -95,7 +95,7 @@ public class Popup : MonoBehaviour
 		LoadingPhase = 0f;
 		CurrentChars.Clear();
 		CurrentChar = 0;
-		var currentSpeed = StandardSpeed;
+		var currentSpeed = StandardSpeed * (1f / Settings.AnimationMultiplier);
 		for (int i = 0; i < text.Length; i++)
 		{
 			var c = text[i];
@@ -110,9 +110,9 @@ public class Popup : MonoBehaviour
 					{
 						var speed = float.Parse(op.Substring(2, op.Length - 3), System.Globalization.NumberStyles.Number);
 						if (speed == 0)
-							currentSpeed = StandardSpeed;
+							currentSpeed = StandardSpeed * (1f / Settings.AnimationMultiplier);
 						else
-							currentSpeed = speed;
+							currentSpeed = speed * (1f / Settings.AnimationMultiplier);
 						continue;
 					}
 					CurrentChars.Add((op, 0f));
@@ -179,7 +179,7 @@ public class Popup : MonoBehaviour
 		if (OpeningPhase >= 1f)
 		{
 			if (TimeLeft > 0f)
-				TimeLeft -= Time.deltaTime * (SpeedUp ? 3f : 1f);
+				TimeLeft -= Time.deltaTime * ((SpeedUp ? 3f : 1f) * (1f / Settings.AnimationMultiplier));
 			while (TimeLeft <= 0f && CurrentChar <= CurrentChars.Count)
 			{
 				if (AudioCooldown <= 0f)

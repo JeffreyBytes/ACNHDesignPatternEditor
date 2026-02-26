@@ -23,7 +23,7 @@ public class Brush
 		int brushWidth = 4;
 		if (BrushOverlayTexture != null)
 		{
-			this.BrushOverlayTexture.Resize(this.Size * this.Editor.PixelSize, this.Size * this.Editor.PixelSize);
+			this.BrushOverlayTexture.Reinitialize(this.Size * this.Editor.PixelSize, this.Size * this.Editor.PixelSize);
 		}
 		else this.BrushOverlayTexture = new Texture2D(this.Size * this.Editor.PixelSize, this.Size * this.Editor.PixelSize, TextureFormat.ARGB32, false);
 

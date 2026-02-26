@@ -126,7 +126,7 @@ public class UploadPattern : MonoBehaviour
 		Confirm = confirm;
 		Cancel = cancel;
 		Animator.SetTrigger("TransitionIn");
-		if (Controller.Instance.CurrentOperation is IPatternOperation patternOperation)
+		if (Controller.Instance.CurrentOperation is ISelectSecondPatternOperation patternOperation)
 		{
 			CreatorInputField.text = patternOperation.GetPattern().Name;
 		}

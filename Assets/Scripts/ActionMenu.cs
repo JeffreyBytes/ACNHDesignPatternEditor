@@ -102,16 +102,16 @@ public class ActionMenu : MonoBehaviour
 		{
 			Pop.PopOut();
 			Controller.Instance.PlayPopoutSound();
-			yield return new WaitForSeconds(0.4f);
+			yield return new WaitForSeconds(0.4f * Settings.AnimationMultiplier);
 			CreateButtons(actions);
 		}
 		Controller.Instance.PlayPopupSound();
 		Opened = true;
 		Pop.PopUp();
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(0.2f * Settings.AnimationMultiplier);
 		for (int i = 0; i < Buttons.Length; i++)
 		{
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
 			Buttons[i].GetComponent<Pop>().PopUp();
 		}
 	}

@@ -1,6 +1,7 @@
 ﻿using DesignServer.Messages;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using xBRZNet;
 
@@ -56,7 +57,7 @@ public class PatternExchange : MonoBehaviour
     private float OpenPhase = 0f;
     private bool Opened = false;
     private bool FullOpen = true;
-    private const float OpenTime = 1.5f;
+    private const float OpenTime = 0.9f;
     private const float Phase1 = 0.3f;
     private const float Phase2 = 0.7f;
     private CanvasGroup CurrentPanel;
@@ -75,6 +76,7 @@ public class PatternExchange : MonoBehaviour
     private bool IsLoading = false;
     private DesignServer.Messages.ListPatternsResponse Response;
     private DesignServer.Pattern SelectedPattern;
+    private bool IsOpen = false;
 
     public void Hide()
     {
@@ -150,40 +152,46 @@ public class PatternExchange : MonoBehaviour
         });
     }
 
-    public void ShowItems(bool proDesigns, System.Action<DesignServer.Pattern> confirm, System.Action cancel)
+    public void Open()
     {
-        this.ProDesigns = proDesigns;
-        if (!this.Opened)
+        if (!IsOpen)
         {
             this.PagesContainer.SetActive(false);
             this.Page = 0;
             this.SearchInput.text = "";
         }
-        if (ProDesigns)
-        {
-            this.ProDesignsTooltip.SetActive(true);
-            this.DesignsTooltip.SetActive(false);
-            this.ProDesignsIcon.color = new Color(237f / 255f, 123f / 255f, 133f / 255f);
-            this.DesignsIcon.color = new Color(185f / 255f, 173f / 255f, 151f / 255f);
-        }
-        else
-        {
-            this.ProDesignsTooltip.SetActive(false);
-            this.DesignsTooltip.SetActive(true);
-            this.ProDesignsIcon.color = new Color(185f / 255f, 173f / 255f, 151f / 255f);
-            this.DesignsIcon.color = new Color(237f / 255f, 123f / 255f, 133f / 255f);
-        }
+        IsOpen = true;
+
         SearchPatterns();
-        this.ConfirmImport = confirm;
-        this.Cancel = cancel;
         StartCoroutine(ShowItemsCoroutine());
+    }
+
+    public void SwitchType(bool proDesigns, bool force = false)
+    {
+        if (this.ProDesigns != proDesigns || force)
+        {
+            this.Page = 0;
+            this.ProDesigns = proDesigns;
+            if (ProDesigns)
+            {
+                this.ProDesignsTooltip.SetActive(true);
+                this.DesignsTooltip.SetActive(false);
+                this.ProDesignsIcon.color = new Color(237f / 255f, 123f / 255f, 133f / 255f);
+                this.DesignsIcon.color = new Color(185f / 255f, 173f / 255f, 151f / 255f);
+            }
+            else
+            {
+                this.ProDesignsTooltip.SetActive(false);
+                this.DesignsTooltip.SetActive(true);
+                this.ProDesignsIcon.color = new Color(185f / 255f, 173f / 255f, 151f / 255f);
+                this.DesignsIcon.color = new Color(237f / 255f, 123f / 255f, 133f / 255f);
+            }
+            SearchPatterns();
+        }
     }
 
     public void ShowDesign(DesignServer.Pattern pattern, System.Action confirm)
     {
-        if (confirm == null && Cancel == null && Confirm == null && ConfirmImport == null)
-            return;
-        // we are coming from items
         if (confirm == null)
         {
             SelectedPattern = pattern;
@@ -253,28 +261,28 @@ public class PatternExchange : MonoBehaviour
         if (Opened)
         {
             FullOpen = false;
-            yield return new WaitForSeconds((1f - Phase1) * OpenTime);
+            yield return new WaitForSeconds((1f - Phase1) * OpenTime * Settings.AnimationMultiplier);
         }
         ItemsPanel.gameObject.SetActive(false);
         DesignPanel.gameObject.SetActive(true);
         CurrentPanel = DesignPanel;
         Opened = true;
         FullOpen = true;
-        yield return new WaitForSeconds(0.5f);
-        if (ConfirmImport == null)
-        {
-            ImportButton.gameObject.SetActive(false);
-            BackButton.gameObject.SetActive(false);
-            ContinueButton.gameObject.SetActive(true);
-            ContinuePop.PopUp();
-        }
-        else
+        yield return new WaitForSeconds(0.5f * Settings.AnimationMultiplier);
+        if (this.Confirm == null)
         {
             ImportButton.gameObject.SetActive(true);
             BackButton.gameObject.SetActive(true);
             ContinueButton.gameObject.SetActive(false);
             ImportPop.PopUp();
             BackPop.PopUp();
+        }
+        else
+        {
+            ImportButton.gameObject.SetActive(false);
+            BackButton.gameObject.SetActive(false);
+            ContinueButton.gameObject.SetActive(true);
+            ContinuePop.PopUp();
         }
     }
 
@@ -284,14 +292,14 @@ public class PatternExchange : MonoBehaviour
         if (Opened)
         {
             FullOpen = false;
-            yield return new WaitForSeconds((1f - Phase1) * OpenTime);
+            yield return new WaitForSeconds((1f - Phase1) * OpenTime * Settings.AnimationMultiplier);
         }
         ItemsPanel.gameObject.SetActive(true);
         DesignPanel.gameObject.SetActive(false);
         CurrentPanel = ItemsPanel;
         Opened = true;
         FullOpen = true;
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.1f * Settings.AnimationMultiplier);
         CancelPop.PopUp();
     }
 
@@ -308,12 +316,30 @@ public class PatternExchange : MonoBehaviour
         };
         CancelButton.OnClick = () =>
         {
-            Cancel?.Invoke();
+            this.IsOpen = false;
+            Controller.Instance.SwitchToPatternMenu();
         };
         ImportButton.OnClick = () =>
         {
-            ConfirmImport?.Invoke(SelectedPattern);
+            Controller.Instance.StartOperation(new ImportOperation(SelectedPattern, this.ProDesigns));
+            //ConfirmImport?.Invoke(SelectedPattern);
         };
+
+        var simpleDesignClick = new EventTrigger.Entry();
+        simpleDesignClick.eventID = EventTriggerType.PointerClick;
+        simpleDesignClick.callback.AddListener((eventData) =>
+        {
+            this.SwitchType(false);
+        });
+        DesignsIcon.transform.parent.GetComponent<EventTrigger>().triggers.Add(simpleDesignClick);
+
+        var proDesignClick = new EventTrigger.Entry();
+        proDesignClick.eventID = EventTriggerType.PointerClick;
+        proDesignClick.callback.AddListener((eventData) =>
+        {
+            this.SwitchType(true);
+        });
+        ProDesignsIcon.transform.parent.GetComponent<EventTrigger>().triggers.Add(proDesignClick);
 
         NextPage.onClick.AddListener(() => {
             if (this.Page < this.Pages - 1)
@@ -348,6 +374,7 @@ public class PatternExchange : MonoBehaviour
             SearchTimer -= Time.deltaTime;
             if (SearchTimer <= 0f)
             {
+                this.Page = 0;
                 this.SearchPatterns();
             }
         }
@@ -386,9 +413,9 @@ public class PatternExchange : MonoBehaviour
         if (CurrentPanel != null)
         {
             if (Opened && (FullOpen && OpenPhase < 1f) || (!FullOpen && OpenPhase < 0.3f))
-                OpenPhase = Mathf.Min(FullOpen ? 1f : 0.3f, OpenPhase + Time.deltaTime / OpenTime);
+                OpenPhase = Mathf.Min(FullOpen ? 1f : 0.3f, OpenPhase + (Time.deltaTime / OpenTime * (1f / Settings.AnimationMultiplier)));
             if ((Opened && !FullOpen && OpenPhase > 0.3f) || (!Opened && OpenPhase > 0f))
-                OpenPhase = Mathf.Max(!Opened ? 0 : 0.3f, OpenPhase - Time.deltaTime / OpenTime);
+                OpenPhase = Mathf.Max(!Opened ? 0 : 0.3f, OpenPhase - (Time.deltaTime / OpenTime * (1f / Settings.AnimationMultiplier)));
 
             var phase1 = Mathf.Clamp(OpenPhase, 0f, Phase1) / (Phase1);
             var phase2 = (Mathf.Clamp(OpenPhase, Phase1, Phase2) - Phase1) / (Phase2 - Phase1);

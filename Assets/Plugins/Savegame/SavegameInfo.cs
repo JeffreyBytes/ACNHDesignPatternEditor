@@ -39,12 +39,13 @@ public class SavegameInfo
         new Header(0x80009, 0x80085, 2, 0, 2, 28, "2.0.6", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 29, "2.0.7", 11),
         new Header(0x80009, 0x80085, 2, 0, 2, 30, "2.0.8", 11),
-        new Header(0xA0002, 0xA0028, 2, 0, 2, 31, "3.0.0", 13)
+        new Header(0xA0002, 0xA0028, 2, 0, 2, 31, "3.0.0", 13),
+        new Header(0xA0002, 0xA0028, 2, 0, 2, 32, "3.0.1", 13)
     };
 
     private static List<Info> Infos = new List<Info>()
     {
-        new Info(0xAC0938, 0x1D72F0, 0x1DF7C0, 50, 50, new HashRegion[] {
+        new Info(0xAC0938, 0x1D72F0, 0x1DF7C0, 0x8BE258, 0x8BE2BC, 50, 50, new HashRegion[] {
             new HashRegion(0x000108, 0x00010C, 0x1D6D4C),
             new HashRegion(0x1D6E58, 0x1D6E5C, 0x323384),
             new HashRegion(0x4FA2E8, 0x4FA2EC, 0x035AC4),
@@ -65,7 +66,7 @@ public class SavegameInfo
             new HashRegion(0x8223E0, 0x8223E4, 0x03607C),
             new HashRegion(0x858460, 0x858464, 0x2684D4)
         }),
-        new Info(0xAC2AA0, 0x1D7310, 0x1DF7E0, 50, 50, new HashRegion[] {
+        new Info(0xAC2AA0, 0x1D7310, 0x1DF7E0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x000114, 0x1D6D5C),
             new HashRegion(0x1D6E70, 0x1D6E74, 0x323C0C),
             new HashRegion(0x4FAB90, 0x4FAB94, 0x035AFC),
@@ -86,7 +87,7 @@ public class SavegameInfo
             new HashRegion(0x823E40, 0x823E44, 0x0362BC),
             new HashRegion(0x85A100, 0x85A104, 0x26899C)
         }),
-        new Info(0xACECD0, 0x1D7310, 0x1DF7E0, 50, 50, new HashRegion[] {
+        new Info(0xACECD0, 0x1D7310, 0x1DF7E0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x000114, 0x1D6D5C),
             new HashRegion(0x1D6E70, 0x1D6E74, 0x323EBC),
             new HashRegion(0x4FAE40, 0x4FAE44, 0x035D2C),
@@ -107,7 +108,7 @@ public class SavegameInfo
             new HashRegion(0x82EAB0, 0x82EAB4, 0x03787C),
             new HashRegion(0x866330, 0x866334, 0x26899C)
         }),
-        new Info(0xACED80, 0x1D7310, 0x1DF7E0, 50, 50, new HashRegion[] {
+        new Info(0xACED80, 0x1D7310, 0x1DF7E0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x1D6D5C),
             new HashRegion(0x1D6E70, 0x323EEC),
             new HashRegion(0x4FAE70, 0x035D2C),
@@ -128,7 +129,7 @@ public class SavegameInfo
             new HashRegion(0x82EB50, 0x03788C),
             new HashRegion(0x8663E0, 0x26899C)
         }),
-        new Info(0xB05790, 0x1D7310, 0x1DF7E0, 50, 50, new HashRegion[] {
+        new Info(0xB05790, 0x1D7310, 0x1DF7E0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x1d6d5c),
             new HashRegion(0x1d6e70, 0x323f2c),
             new HashRegion(0x4faeb0, 0x035d2c),
@@ -149,7 +150,7 @@ public class SavegameInfo
             new HashRegion(0x85e8c0, 0x03e5dc),
             new HashRegion(0x89cea0, 0x2688ec)
         }),
-        new Info(0xB20750, 0x1E2710, 0x1EABE0, 50, 50, new HashRegion[] {
+        new Info(0xB20750, 0x1E2710, 0x1EABE0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x1e215c),
             new HashRegion(0x1e2270, 0x323f6c),
             new HashRegion(0x5062f0, 0x03693c),
@@ -170,7 +171,7 @@ public class SavegameInfo
             new HashRegion(0x878520, 0x03f93c),
             new HashRegion(0x8b7e60, 0x2688ec)
         }),
-        new Info(0xB258E0, 0x1E2710, 0x1EABE0, 50, 50, new HashRegion[] {
+        new Info(0xB258E0, 0x1E2710, 0x1EABE0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x1e215c),
             new HashRegion(0x1e2270, 0x32403c),
             new HashRegion(0x5063c0, 0x03693c),
@@ -191,7 +192,7 @@ public class SavegameInfo
             new HashRegion(0x87c790, 0x04029c),
             new HashRegion(0x8bca30, 0x268eac)
         }),
-        new Info(0x849C30, 0x1E2710, 0x1EABE0, 50, 50, new HashRegion[] {
+        new Info(0x849C30, 0x1E2710, 0x1EABE0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x1e215c),
 			new HashRegion(0x1e2270, 0x3221fc),
 			new HashRegion(0x504580, 0x03693c),
@@ -212,7 +213,7 @@ public class SavegameInfo
 			new HashRegion(0x7f7780, 0x02d6ec),
 			new HashRegion(0x824e70, 0x024dbc)
         }),
-        new Info(0x849C30, 0x1E2710, 0x1EABE0, 50, 50, new HashRegion[] {
+        new Info(0x849C30, 0x1E2710, 0x1EABE0, 0x8BE260, 0x8BE2C4, 50, 50, new HashRegion[] {
             new HashRegion(0x000110, 0x1e215c),
             new HashRegion(0x1e2270, 0x3221fc),
             new HashRegion(0x504580, 0x03693c),
@@ -233,7 +234,7 @@ public class SavegameInfo
             new HashRegion(0x7f7780, 0x02d6ec),
             new HashRegion(0x824e70, 0x024dbc)
         }),
-        new Info(0x86D560, 0x1E2710, 0x1F30B0, 100, 100, new HashRegion[] {
+        new Info(0x86D560, 0x1E2710, 0x1F30B0, 0x8BE260, 0x8BE2C4, 100, 100, new HashRegion[] {
             new HashRegion(0x000110, 0x1e215c),
             new HashRegion(0x1e2270, 0x34582c),
             new HashRegion(0x527bb0, 0x03693c),
@@ -254,7 +255,7 @@ public class SavegameInfo
             new HashRegion(0x81ae90, 0x02d70c),
             new HashRegion(0x8485a0, 0x024fbc)
         }),
-        new Info(0x86D570, 0x1E2720, 0x1F30C0, 100, 100, new HashRegion[] {
+        new Info(0x86D570, 0x1E2720, 0x1F30C0, 0x8BE260, 0x8BE2C4, 100, 100, new HashRegion[] {
             new HashRegion(0x000110, 0x1e216c),
             new HashRegion(0x1e2280, 0x34582c),
             new HashRegion(0x527bc0, 0x03693c),
@@ -275,7 +276,7 @@ public class SavegameInfo
             new HashRegion(0x81aea0, 0x02d70c),
             new HashRegion(0x8485b0, 0x024fbc)
         }),
-        new Info(0x8F1BB0, 0x1E3958, 0x1F42F8, 100, 100, new HashRegion[] {
+        new Info(0x8F1BB0, 0x1E3958, 0x1F42F8, 0x8BE260, 0x8BE2C4, 100, 100, new HashRegion[] {
             new HashRegion(0x000110, 0x1e339c),
             new HashRegion(0x1e34b0, 0x36406c),
             new HashRegion(0x547630, 0x03693c),
@@ -296,7 +297,7 @@ public class SavegameInfo
             new HashRegion(0x866350, 0x033acc),
             new HashRegion(0x899e20, 0x057d8c),
         }),
-        new Info(0x8F1BB0, 0x1E3958, 0x1F42F8, 100, 100, new HashRegion[] {
+        new Info(0x8F1BB0, 0x1E3958, 0x1F42F8, 0x8BE260, 0x8BE2C4, 100, 100, new HashRegion[] {
             new HashRegion(0x000110, 0x1e339c),
             new HashRegion(0x1e34b0, 0x36406c),
             new HashRegion(0x547630, 0x03693c),
@@ -317,7 +318,7 @@ public class SavegameInfo
             new HashRegion(0x866350, 0x033acc),
             new HashRegion(0x899e20, 0x057d8c),
         }),
-        new Info(0x9B0E90, 0x1E3958, 0x1F42F8, 100, 100, new HashRegion[] {
+        new Info(0x9B0E90, 0x1E3958, 0x1F42F8, 0x97D390, 0x97D3F4, 100, 100, new HashRegion[] {
             new HashRegion(0x000110, 0x1e339c),
             new HashRegion(0x1e34b0, 0x3d089c),
             new HashRegion(0x5b3e60, 0x037acc),
@@ -340,6 +341,11 @@ public class SavegameInfo
         })
     };
 
+    public static Info GetLatest()
+    {
+        return Infos[Infos.Count - 1];
+    }
+
     public static Info GetInfo(byte[] headerBytes)
     {
         var major          = BitConverter.ToUInt32(headerBytes, 0);
@@ -361,7 +367,7 @@ public class SavegameInfo
 
     public class Info
     {
-        public Info(int size, int simpleDesignPatternOffset, int proDesignPatternOffset, int simpleDesignCount, int proDesignCount, HashRegion[] hashRegions)
+        public Info(int size, int simpleDesignPatternOffset, int proDesignPatternOffset, int simpleDesignSetFlagsOffset, int proDesignSetFlagsOffset, int simpleDesignCount, int proDesignCount, HashRegion[] hashRegions)
         {
             this.Size = size;
             this.SimpleDesignPatternsOffset = simpleDesignPatternOffset;
@@ -369,6 +375,8 @@ public class SavegameInfo
             this.HashRegions = hashRegions;
             this.SimpleDesignCount = simpleDesignCount;
             this.ProDesignCount = proDesignCount;
+            this.SimpleDesignSetFlagOffset = simpleDesignSetFlagsOffset;
+            this.ProDesignSetFlagOffset = proDesignSetFlagsOffset;
         }
 
         public readonly int Size;
@@ -376,6 +384,8 @@ public class SavegameInfo
         public readonly int ProDesignPatternsOffset;
         public readonly int SimpleDesignCount;
         public readonly int ProDesignCount;
+        public readonly int SimpleDesignSetFlagOffset;
+        public readonly int ProDesignSetFlagOffset;
 
         public readonly HashRegion[] HashRegions;
     }

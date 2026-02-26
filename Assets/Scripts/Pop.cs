@@ -37,10 +37,10 @@ public class Pop : MonoBehaviour
 	void Update()
     {
 		if (PoppingUp && PopPhase < 1f)
-			PopPhase = Mathf.Min(1f, PopPhase + Time.deltaTime * 3f);
+			PopPhase = Mathf.Min(1f, PopPhase + Time.deltaTime * 3f * (1f / Settings.AnimationMultiplier));
 		if (!PoppingUp && PopPhase > 0f)
-			PopPhase = Mathf.Max(0f, PopPhase - Time.deltaTime * 3f);
-		if (OldPopPhase != PopPhase)
+			PopPhase = Mathf.Max(0f, PopPhase - Time.deltaTime * 3f * (1f / Settings.AnimationMultiplier));
+        if (OldPopPhase != PopPhase)
 		{
 			OldPopPhase = PopPhase;
 			var scale = EasingFunction.EaseOutBack(0f, 1f, PopPhase);
