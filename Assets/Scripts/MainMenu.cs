@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
@@ -115,7 +116,8 @@ public class MainMenu : MonoBehaviour
 			{
 				if (Controller.Instance.CurrentState == Controller.State.MainMenu)
                 {
-                    var path = TinyFileDialogs.SaveFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Design file");
+					var path = "C:\\test.designs";
+                    //var path = TinyFileDialogs.SaveFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Design file");
                     if (path != null)
 					{
 						if (!path.ToLowerInvariant().EndsWith(".designs"))

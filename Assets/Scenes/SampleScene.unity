@@ -22412,7 +22412,7 @@ GameObject:
   - component: {fileID: 500439559}
   - component: {fileID: 500439558}
   m_Layer: 5
-  m_Name: Savegame
+  m_Name: Standalone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24142,7 +24142,7 @@ GameObject:
   - component: {fileID: 534914551}
   - component: {fileID: 534914550}
   m_Layer: 5
-  m_Name: SelectSavegame
+  m_Name: SelectFile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43368,10 +43368,10 @@ RectTransform:
   - {fileID: 1208654742}
   m_Father: {fileID: 2048971458}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 939.6289, y: 518.5488}
-  m_SizeDelta: {x: -1806.4152, y: -984.61145}
+  m_AnchoredPosition: {x: -25.43, y: -21.451172}
+  m_SizeDelta: {x: 123.74, y: 95.39}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &981015173
 MonoBehaviour:
@@ -45794,7 +45794,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -65, y: -0.0000038147}
+  m_AnchoredPosition: {x: -52.4, y: -0.0000038147}
   m_SizeDelta: {x: 170, y: 170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1049471577
@@ -50876,7 +50876,7 @@ GameObject:
   - component: {fileID: 1165255141}
   - component: {fileID: 1165255140}
   m_Layer: 5
-  m_Name: Savegame
+  m_Name: Kofi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54901,7 +54901,7 @@ GameObject:
   - component: {fileID: 1234749501}
   - component: {fileID: 1234749500}
   m_Layer: 5
-  m_Name: HowTo
+  m_Name: Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61377,7 +61377,7 @@ GameObject:
   - component: {fileID: 1368489672}
   - component: {fileID: 1368489671}
   m_Layer: 5
-  m_Name: HowTo
+  m_Name: Back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68684,8 +68684,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 0.9173843
-    height: 1.1602297
+    width: 2.458402
+    height: 1.1602514
 --- !u!1 &1516841735
 GameObject:
   m_ObjectHideFlags: 0
@@ -83042,7 +83042,7 @@ GameObject:
   - component: {fileID: 1848196578}
   - component: {fileID: 1848196577}
   m_Layer: 5
-  m_Name: SelectSavegame
+  m_Name: CreateFile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

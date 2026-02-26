@@ -16,11 +16,11 @@ public class TinyFileDialogs
 #if UNITY_STANDALONE_OSX
         public const string DLL = "tinyfiledialogs.dylib";
 #endif
-    [DllImport(DLL, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("__Internal", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr tinyfd_selectFolderDialog(string aTitle, string aDefaultPathAndFile);
-    [DllImport(DLL, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("__Internal", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr tinyfd_openFileDialog(string aTitle, string aDefaultPathAndFile, int aNumOfFilterPatterns, string[] aFilterPatterns, string aSingleFilterDescription, int aAllowMultipleSelects);
-    [DllImport(DLL, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("__Internal", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr tinyfd_saveFileDialog(string aTitle, string aDefaultPathAndFile, int aNumOfFilterPatterns, string[] aFilterPatterns, string aSingleFilterDescription);
 
     public static string OpenFileDialog(string title, string defaultPath, List<string> filters, string filterDescription, bool allowMultiple)

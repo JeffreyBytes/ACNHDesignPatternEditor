@@ -652,7 +652,8 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend:
     Standalone: 1
-  il2cppCompilerConfiguration: {}
+  il2cppCompilerConfiguration:
+    Standalone: 1
   il2cppCodeGeneration: {}
   managedStrippingLevel:
     EmbeddedLinux: 1
@@ -674,7 +675,7 @@ PlayerSettings:
   suppressCommonWarnings: 1
   allowUnsafeCode: 1
   useDeterministicCompilation: 1
-  additionalIl2CppArgs: 
+  additionalIl2CppArgs: --linker-flags="comdlg32.lib"
   scriptingRuntimeVersion: 1
   gcIncremental: 0
   gcWBarrierValidation: 0

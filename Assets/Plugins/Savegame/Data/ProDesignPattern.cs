@@ -31,6 +31,7 @@ public unsafe class ProDesignPattern : DesignPattern
 
     public void Write(BinaryData data, int offset)
 	{
+
 		data.WriteString(offset + NameOffset, this._Name, 20);
         data.WriteU16(offset + UsageOffset, (ushort) UsageFlag);
         _PersonalID.Write(data, offset + PersonalIDOffset);

@@ -398,7 +398,7 @@ public unsafe class TextureBitmap
 		Height = height;
 
 		Bytes = Marshal.AllocHGlobal(width * height * PixelSize);
-		RegisterTexture(ID, Bytes);
+		//RegisterTexture(ID, Bytes);
 
 		if (createBackgroundTexture)
 		{
@@ -412,10 +412,13 @@ public unsafe class TextureBitmap
 		if (this.Texture == null)
 		{
 			Texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false);
-			CommandBuffer = new CommandBuffer();
-			CommandBuffer.IssuePluginCustomTextureUpdateV2(GetTextureBitmapUpdateCallback(), this.Texture, ID);
-		}
-	}
+			Texture.LoadRawTextureData(this.Bytes, Width * Height * 4);
+            Texture.Apply();
+
+            //CommandBuffer = new CommandBuffer();
+            //CommandBuffer.IssuePluginCustomTextureUpdateV2(GetTextureBitmapUpdateCallback(), this.Texture, ID);
+        }
+    }
 
 	public class Rectangle
 	{
@@ -928,9 +931,11 @@ public unsafe class TextureBitmap
 		if (Disposed) return;
 		if (this.Texture != null)
 		{
-			CommandBuffer.Clear();
-			CommandBuffer.IssuePluginCustomTextureUpdateV2(GetTextureBitmapUpdateCallback(), this.Texture, ID);
-			Graphics.ExecuteCommandBuffer(CommandBuffer);
+            Texture.LoadRawTextureData(this.Bytes, Width * Height * 4);
+			Texture.Apply();
+            //CommandBuffer.Clear();
+			//CommandBuffer.IssuePluginCustomTextureUpdateV2(GetTextureBitmapUpdateCallback(), this.Texture, ID);
+			//Graphics.ExecuteCommandBuffer(CommandBuffer);
 		}
 	}
 
@@ -943,7 +948,7 @@ public unsafe class TextureBitmap
 			if (Texture != null)
 				GameObject.Destroy(Texture);
 			Marshal.FreeHGlobal(Bytes);
-			UnregisterTexture(ID);
+			//UnregisterTexture(ID);
 		}
 	}
 
@@ -960,10 +965,10 @@ public unsafe class TextureBitmap
 			Bytes = Marshal.AllocHGlobal(Width * Height * PixelSize);
 			if (this.Texture != null)
 			{
-				UnregisterTexture(ID);
+				//UnregisterTexture(ID);
 				this.Texture.Reinitialize(Width, Height);
 				this.Texture.Apply();
-				RegisterTexture(ID, Bytes);
+				//RegisterTexture(ID, Bytes);
 			}
 		}
 	}

@@ -31,6 +31,15 @@ public unsafe class SimpleDesignPattern : DesignPattern
 
     public void Write(BinaryData data, int offset)
 	{
+		UsageFlag = Usage.Opaque;
+		for (var i = 0; i < Image.Length; i++)
+		{
+			if ((Image[i] & 0xF) == 0xF || (Image[i] & 0x0F) == 0x0F) // transparent pixel found
+			{
+				UsageFlag = Usage.Transparent;
+				break;
+			}
+		}
 		data.WriteString(offset + NameOffset, this._Name, 20);
 		data.WriteU16(offset + UsageOffset, (ushort) UsageFlag);
 		_PersonalID.Write(data, offset + PersonalIDOffset);
