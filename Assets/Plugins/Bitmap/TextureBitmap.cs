@@ -895,7 +895,11 @@ public unsafe class TextureBitmap
 		else if (filename.ToLowerInvariant().EndsWith(".webp"))
 			Save(filename, ImageFormat.GIF);
 		else
-            Save(filename, ImageFormat.PNG);
+		{
+			if (!filename.EndsWith(".png"))
+				filename += ".png";
+			Save(filename, ImageFormat.PNG);
+		}
     }
 
 	public void Save(string filename, ImageFormat format)

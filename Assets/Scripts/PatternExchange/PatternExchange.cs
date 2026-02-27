@@ -316,7 +316,6 @@ public class PatternExchange : MonoBehaviour
         };
         CancelButton.OnClick = () =>
         {
-            this.IsOpen = false;
             Controller.Instance.SwitchToPatternMenu();
         };
         ImportButton.OnClick = () =>

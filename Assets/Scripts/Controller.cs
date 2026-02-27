@@ -781,6 +781,7 @@ public class Controller : MonoBehaviour
 				Tutorial.gameObject.SetActive(false);
 			if (CurrentState == State.PatternSelection)
 				PatternSelector.Close();
+			PatternSelector.Close();
 			CurrentState = State.MainMenu;
 			MainMenu.Open();
 		}

@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Security;
 
 public class ImportOperation : IOperation, ISelectPatternOperation, IBackToPatternExchangeOperation
 {

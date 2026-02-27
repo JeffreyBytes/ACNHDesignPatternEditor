@@ -64,7 +64,17 @@ public unsafe class BinaryData
     public string ReadString(int offset, int size)
     {
         if (offset < 0 || offset + size * 2 > Size) throw new IndexOutOfRangeException(offset + " is outside of binary data.");
-        return System.Text.Encoding.Unicode.GetString(ReadBytes(offset, size * 2)).Trim('\0');
+        var bytes = ReadBytes(offset, size * 2);
+        var len = size * 2;
+        for (var i = 0; i < bytes.Length - 1; i+=2)
+        {
+            if (bytes[i] == 0x00 && bytes[i + 1] == 0x00)
+            {
+                len = i;
+                break;
+            }
+        }
+        return System.Text.Encoding.Unicode.GetString(bytes, 0, len).Trim('\0');
         //return Marshal.PtrToStringUni(new IntPtr(Data + offset), size * 2).Trim('\0');
         /*byte[] byteData = new byte[size * 2];
         fixed (byte* bytePtr = &byteData[0])

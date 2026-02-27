@@ -1,5 +1,6 @@
 ﻿using DesignServer;
 using SimplePaletteQuantizer.Quantizers.XiaolinWu;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -141,9 +142,12 @@ public class PatternSelector : MonoBehaviour
 
 	public void Close()
 	{
-		PreventSwitch = false;
-		IsOpened = false;
-		StartCoroutine(DoClose());
+		if (IsOpened)
+		{
+			PreventSwitch = false;
+			IsOpened = false;
+			StartCoroutine(DoClose());
+		}
 	}
 
 	void CreatePatterns()
@@ -344,8 +348,12 @@ public class PatternSelector : MonoBehaviour
 						{
                             if (format == FormatPopup.Format.ACNH)
                             {
-                                var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnh" }, "Design", false);
-                                if (path != null)
+#if UNITY_STANDALONE_OSX
+								var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() {}, "Design (*.acnh)", false);
+#else 
+								var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnh" }, "Design (*.acnh)", false);
+#endif
+								if (path != null)
                                 {
                                     try
                                     {
@@ -377,6 +385,10 @@ public class PatternSelector : MonoBehaviour
                                                 }
                                             }
                                         }
+										else
+										{
+											Controller.Instance.Popup.SetText("Please select a .anch file.", false, () => { return true; });
+                                        }
                                     }
                                     catch (System.Exception e)
                                     {
@@ -386,7 +398,7 @@ public class PatternSelector : MonoBehaviour
                             }
                             else if (format == FormatPopup.Format.Raw)
                             {
-                                var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.nhd" }, "Design", false);
+                                var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.nhd" }, "Design (*.nhd)", false);
                                 if (path != null)
                                 {
                                     try
@@ -454,8 +466,12 @@ public class PatternSelector : MonoBehaviour
                                 }
                             }
                             else if (format == FormatPopup.Format.ACNL)
-							{
-								var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnl" }, "Design", false);
+                            {
+#if UNITY_STANDALONE_OSX
+								var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() {}, "Design (*.acnl)", false);
+#else 
+								var path = TinyFileDialogs.OpenFileDialog("Import design", "", new List<string>() { "*.acnl" }, "Design (*.acnl)", false);
+#endif
                                 if (path != null)
 								{
 									try
@@ -488,8 +504,12 @@ public class PatternSelector : MonoBehaviour
 													}
 												}
 											}
-										}
-									}
+                                        }
+                                        else
+                                        {
+                                            Controller.Instance.Popup.SetText("Please select a .acnl file.", false, () => { return true; });
+                                        }
+                                    }
 									catch (System.Exception e)
 									{
 										Controller.Instance.Popup.SetText("Unknown error occured.", false, () => { return true; });
@@ -498,7 +518,7 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.Image)
 							{
-								var path = TinyFileDialogs.OpenFileDialog("Import image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp" }, "Image", false);
+								var path = TinyFileDialogs.OpenFileDialog("Import image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp" }, "Image (*.png,*.jpg,*.jpeg,*.bmp,*.gif,*.webp)", false);
 								if (path != null)
 								{
 									TextureBitmap bmp = null;
@@ -637,7 +657,7 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.QR)
                             {
-                                var path = TinyFileDialogs.OpenFileDialog("Import image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp" }, "QR Code Image", false);
+                                var path = TinyFileDialogs.OpenFileDialog("Import image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.webp" }, "QR Code Image (*.png,*.jpg,*.jpeg,*.bmp,*.gif,*.webp)", false);
                                 if (path != null)
 								{
 									TextureBitmap bmp = null;
@@ -756,9 +776,11 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.ACNH)
                             {
-                                var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnh" }, "Design");
+                                var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnh" }, "Design (*.acnh)");
                                 if (path != null)
 								{
+									if (!path.EndsWith(".acnh"))
+										path += ".acnh";
 									try
 									{
 										var file = ACNHFileFormat.FromPattern(pattern.Pattern);
@@ -774,9 +796,12 @@ public class PatternSelector : MonoBehaviour
                             }
                             else if (format == FormatPopup.Format.Raw)
                             {
-                                var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.nhd" }, "Design");
+                                var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.nhd" }, "Design (*.nhd)");
+
                                 if (path != null)
                                 {
+									if (!path.EndsWith(".nhd"))
+										path += ".nhd";
                                     try
                                     {
                                         byte[] bytes = null;
@@ -820,10 +845,12 @@ public class PatternSelector : MonoBehaviour
                             }
                             else if (format == FormatPopup.Format.ACNL)
 							{
-								var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnl" }, "Design");
+								var path = TinyFileDialogs.SaveFileDialog("Export design", "", new List<string>() { "*.acnl" }, "Design (*.acnl)");
 								if (path != null)
 								{
-									try
+									if (!path.EndsWith(".acnl"))
+										path += ".acnl";
+                                    try
 									{
 										var file = ACNLFileFormat.FromPattern(pattern.Pattern);
 										var bytes = file.ToBytes();
@@ -838,7 +865,7 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.Image)
 							{
-								var path = TinyFileDialogs.SaveFileDialog("Export image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif" }, "Image");
+								var path = TinyFileDialogs.SaveFileDialog("Export image", "", new List<string>() { "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif" }, "Image (*.png,*.jpg,*.jpeg,*.bmp,*.gif,*.webp)");
 								if (path != null)
 								{
 									var bitmap = pattern.Pattern.GetBitmap();
@@ -848,9 +875,11 @@ public class PatternSelector : MonoBehaviour
 							}
 							else if (format == FormatPopup.Format.QR)
 							{
-                                var path = TinyFileDialogs.SaveFileDialog("Export image", "", new List<string>() { "*.png" }, "QR Code");
+                                var path = TinyFileDialogs.SaveFileDialog("Export image", "", new List<string>() { "*.png" }, "QR Code (*.png)");
 								if (path != null && path.Length > 0)
 								{
+									if (!path.EndsWith(".png"))
+										path += ".png";
 									try
 									{
 										var file = ACNLFileFormat.FromPattern(pattern.Pattern);
@@ -860,7 +889,7 @@ public class PatternSelector : MonoBehaviour
 										writer.Format = BarcodeFormat.QR_CODE;
 										if (bytes.Length > 620)
 										{
-											int parity = Random.Range(0, 255);
+											int parity = UnityEngine.Random.Range(0, 255);
 											TextureBitmap[] bitmaps = new TextureBitmap[4];
 											for (int i = 0; i < 4; i++)
 											{
@@ -997,51 +1026,63 @@ public class PatternSelector : MonoBehaviour
 			Controller.Instance.SwitchToPatternExchange(UploadedPattern, () => { });
 			UploadedPattern = null;
 		}*/
-		if (Controller.Instance.CurrentOperation != null)
+		try
 		{
-			OperationRunning = true;
-			if (Controller.Instance.CurrentOperation is ISelectSecondPatternOperation patternOperation)
+			if (Controller.Instance.CurrentOperation != null)
 			{
-                ActionMenu.Close();
-                var pattern = patternOperation.GetPattern();
-				for (int i = 0; i < PatternObjects.Length; i++)
-				{
-					if (PatternObjects[i].Pattern == pattern)
-						PatternObjects[i].Highlight();
-					else
-						PatternObjects[i].Unhighlight();
-				}
-				MainButtons.SetActive(false);
-				CloneSwapButtons.SetActive(true);
-			}
-            if (Controller.Instance.CurrentOperation is IMultiplePatternSelectorOperation multiSelect)
-            {
-                var patterns = multiSelect.GetPatterns();
-                for (int i = 0; i < PatternObjects.Length; i++)
+				OperationRunning = true;
+                if (Controller.Instance.CurrentOperation is ISelectPatternOperation selectOperation)
                 {
-                    if (patterns.Contains(PatternObjects[i].Pattern))
-                        PatternObjects[i].Highlight();
-                    else
-                        PatternObjects[i].Unhighlight();
+                    MainButtons.SetActive(false);
+                    CloneSwapButtons.SetActive(true);
                 }
-                MainButtons.SetActive(false);
-                CloneSwapButtons.SetActive(false);
-            }
-        }
-		else
-		{
-			if (OperationRunning)
-			{
-				MainButtons.SetActive(true);
-				CloneSwapButtons.SetActive(false);
-				for (int i = 0; i < PatternObjects.Length; i++)
+                else if (Controller.Instance.CurrentOperation is ISelectSecondPatternOperation patternOperation)
 				{
-					PatternObjects[i].SetPattern(PatternObjects[i].Pattern);
-					PatternObjects[i].Unhighlight();
-					PatternObjects[i].Unselect();
+					ActionMenu.Close();
+					var pattern = patternOperation.GetPattern();
+					for (int i = 0; i < PatternObjects.Length; i++)
+					{
+						if (PatternObjects[i].Pattern == pattern)
+							PatternObjects[i].Highlight();
+						else
+							PatternObjects[i].Unhighlight();
+					}
+					MainButtons.SetActive(false);
+					CloneSwapButtons.SetActive(true);
 				}
-				OperationRunning = false;
+				if (Controller.Instance.CurrentOperation is IMultiplePatternSelectorOperation multiSelect)
+				{
+					var patterns = multiSelect.GetPatterns();
+					for (int i = 0; i < PatternObjects.Length; i++)
+					{
+						if (patterns.Contains(PatternObjects[i].Pattern))
+							PatternObjects[i].Highlight();
+						else
+							PatternObjects[i].Unhighlight();
+					}
+					MainButtons.SetActive(false);
+					CloneSwapButtons.SetActive(false);
+				}
 			}
+			else
+			{
+				if (OperationRunning)
+				{
+					MainButtons.SetActive(true);
+					CloneSwapButtons.SetActive(false);
+					for (int i = 0; i < PatternObjects.Length; i++)
+					{
+						PatternObjects[i].SetPattern(PatternObjects[i].Pattern);
+						PatternObjects[i].Unhighlight();
+						PatternObjects[i].Unselect();
+					}
+					OperationRunning = false;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			UnityEngine.Debug.LogError(e);
 		}
 		if (IsOpened && OpenPhase < 1f)
 			OpenPhase = Mathf.Min(1f, OpenPhase + Time.deltaTime * 3f);

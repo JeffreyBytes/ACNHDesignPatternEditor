@@ -15,7 +15,7 @@ public unsafe class ProDesignPattern : DesignPattern
 	public Usage _UsageFlag;
 
 	public const int NameOffset = 0x10;
-    public const int UsageOffset = 0x30;
+    public const int UsageOffset = 0x70;
 	public const int PersonalIDOffset = 0x38;
     public const int PaletteOffset = 0x78;
 	public const int ImageOffset = 0xA5;

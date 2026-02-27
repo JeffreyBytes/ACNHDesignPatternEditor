@@ -8887,8 +8887,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 4.3220754
-    height: 1.2313598
+    width: 4.2916703
+    height: 1.2226986
 --- !u!1 &199922433
 GameObject:
   m_ObjectHideFlags: 0
@@ -11044,7 +11044,7 @@ RectTransform:
   m_Father: {fileID: 2117182710}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -21516,7 +21516,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 1091, y: -81}
-  m_SizeDelta: {x: 463, y: 85}
+  m_SizeDelta: {x: 463, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &481257581
 MonoBehaviour:
@@ -25832,8 +25832,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 4.8007646
-    height: 1.2313598
+    width: 4.7669964
+    height: 1.2226986
 --- !u!1 &583112240
 GameObject:
   m_ObjectHideFlags: 0
@@ -44761,7 +44761,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 248820484}
   m_HandleRect: {fileID: 248820483}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 8
   m_OnValueChanged:
@@ -46547,8 +46547,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 4.8007646
-    height: 1.2313598
+    width: 4.7669964
+    height: 1.2226986
 --- !u!1 &1069338936
 GameObject:
   m_ObjectHideFlags: 0
@@ -55015,7 +55015,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1236777854}
   m_Layer: 5
-  m_Name: CloneSwapButtons
+  m_Name: CancelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -71124,7 +71124,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1584672643
 RectTransform:
   m_ObjectHideFlags: 0
@@ -72963,7 +72963,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 5}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1608408937
 MonoBehaviour:
@@ -94204,8 +94204,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 5.9139733
-    height: 1.2313598
+    width: 5.8723774
+    height: 1.2226986
 --- !u!222 &2049374030
 CanvasRenderer:
   m_ObjectHideFlags: 0

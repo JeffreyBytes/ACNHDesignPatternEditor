@@ -101,7 +101,7 @@ public class MainMenu : MonoBehaviour
 			{
 				if (Controller.Instance.CurrentState == Controller.State.MainMenu)
 				{
-					var path = TinyFileDialogs.OpenFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Design file", false);
+                    var path = TinyFileDialogs.OpenFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Designs (*.designs)", false);
 					if (path != null)
 					{
 						LoadDesigns(path);
@@ -116,7 +116,7 @@ public class MainMenu : MonoBehaviour
 			{
 				if (Controller.Instance.CurrentState == Controller.State.MainMenu)
                 {
-					var path = TinyFileDialogs.SaveFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Design file");
+					var path = TinyFileDialogs.SaveFileDialog("Open designs", "", new List<string>() { "*.designs" }, "Designs (*.designs)");
                     if (path != null)
 					{
 						if (!path.ToLowerInvariant().EndsWith(".designs"))
